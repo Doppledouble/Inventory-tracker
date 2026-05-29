@@ -5,7 +5,7 @@ from database import get_db
 from models.employee import Employee
 from schemas.employee import EmployeeCreate, EmployeeUpdate
 
-router = APIRouter(prefix="/employee", tags=["Employee"])
+router = APIRouter(prefix="/employees", tags=["Employees"])
 
 @router.post("/")
 def create_employee(employee: EmployeeCreate, db: Session = Depends(get_db)):

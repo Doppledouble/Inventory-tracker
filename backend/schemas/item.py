@@ -7,7 +7,7 @@ from models.enums import ItemStatus
 class ItemBase(BaseModel):
     name        : str
     category    : Optional[str]
-    count       : int = Field(gt=0)
+    count       : int = Field(default=0, gt=0)
     
 
 class ItemCreate(ItemBase):
@@ -17,9 +17,9 @@ class ItemCreate(ItemBase):
 class ItemUpdate(BaseModel):
     name        : Optional[str] = None
     category    : Optional[str] = None
-    count       : Optional[int] = Field(gt=0)
-    status      : Optional[ItemStatus] = None
+    count       : Optional[int] = Field(default=0, gt=0)
     location_id : Optional[int] = None
+    # status      : Optional[ItemStatus] = None
     
     
 class ItemResponse(ItemBase):

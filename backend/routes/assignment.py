@@ -7,7 +7,7 @@ from models.item import Item
 from models.employee import Employee
 from schemas.assignment import AssignmentCreate, AssignmentUpdate
 
-router = APIRouter(prefix="/assignment", tags=["Assignment"])
+router = APIRouter(prefix="/assignments", tags=["Assignments"])
 
 @router.post("/")
 def create_assignment(assignment: AssignmentCreate, db: Session = Depends(get_db)):
@@ -74,7 +74,15 @@ def update_assignment(assignment_id: int, assignment_data: AssignmentUpdate, db:
 
     for key, value in update_data.items():
         setattr(assignment, key, value)
-
+        
+    #auto-update item status if item was given back by employee
+    if not assignment.returned_at:
+        assignment.item.status = "assigned"
+    else:
+        assignment.item.status = "available"
+    
+        
+        
     db.commit()
     db.refresh(assignment)
 

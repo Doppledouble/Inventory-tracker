@@ -26,5 +26,5 @@ class Item(Base):
 
     #relations
     location = relationship("Location", back_populates="items")
-    assignments = relationship("Assignmnet", back_populates="item", cascade="all, delete-orphan")
+    assignments = relationship("Assignment", back_populates="item", cascade="all, delete-orphan")
     # employee = relationship("Employee", back_populates="items")

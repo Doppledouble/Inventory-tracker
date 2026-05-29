@@ -24,5 +24,5 @@ class LocationResponse(LocationBase):
     created_at  : datetime
     updated_at  : Optional[datetime]
     
-    class config:
+    class Config:
         from_attributes = True
