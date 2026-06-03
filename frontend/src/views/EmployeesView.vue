@@ -10,6 +10,14 @@ const addEmployee = () => {
   router.push("/employees/create");
 };
 
+const editEmployee = (id) => {
+  router.push(`/employees/${id}/edit`);
+};
+
+const prefetchEmployeeCreate = () => {
+  import("./EmployeeCreateView.vue");
+};
+
 const loadEmployees = async () => {
   try {
     const response = await getEmployees();
@@ -37,7 +45,6 @@ const deleteEmployeeHandler = async (id) => {
     console.error(error);
   }
 };
-
 </script>
 
 <template>
@@ -98,6 +105,7 @@ const deleteEmployeeHandler = async (id) => {
           <div class="dash-cell action-buttons">
             <button
               class="btn-ghost btn-small"
+              @click="editEmployee(employee.id)"
             >
               Edit
             </button>

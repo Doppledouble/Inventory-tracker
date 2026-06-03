@@ -5,7 +5,7 @@ export const getEmployees = () => {
 };
 
 export const getEmployeeById = (id) => {
-  return api.get("/employees/${id}");
+  return api.get(`/employees/${id}`);
 }
 
 export const createEmployee = (employeeData) => {

@@ -1,18 +1,41 @@
 <script setup>
-import { ref } from "vue";
-import { createEmployee } from "../services/employeeService";
-import { useRouter } from "vue-router";
-import EmployeeForm from "../components/EmployeeForm.vue";
+import { ref, onMounted } from "vue";
+import { useRoute, useRouter } from "vue-router";
 
+import EmployeeForm from "../components/EmployeeForm.vue";
+import { getEmployeeById,updateEmployee } from "../services/employeeService";
+
+const route = useRoute();
 const router = useRouter();
 
+const employeeId = route.params.id;
+
+console.log("employeeId:", employeeId);
+
 const loading = ref(false);
+
+const employee = ref({
+  first_name: "",
+  last_name: "",
+  email: "",
+  is_admin: false,
+});
+
+onMounted(async () => {
+  try {
+    const response = await getEmployeeById(employeeId);
+
+    employee.value = response.data;
+  } catch (error) {
+    console.error(error);
+  }
+});
 
 const handleSubmit = async (employeeData) => {
   try {
     loading.value = true;
 
-    await createEmployee(employeeData);
+    await updateEmployee(employeeId, employeeData);
 
     router.push("/employees");
   } catch (error) {
@@ -35,13 +58,14 @@ const handleCancel = () => {
       </div>
 
       <h1 class="section-title">
-        Tambah Karyawan
+        Update Karyawan
       </h1>
     </div>
 
     <EmployeeForm
+      :initial-data="employee"
       :loading="loading"
-      submit-label="Tambah Karyawan"
+      submit-label="Update Karyawan"
       @submit="handleSubmit"
       @cancel="handleCancel"
     />
