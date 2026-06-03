@@ -66,4 +66,4 @@ def delete_employee(employee_id: int, db: Session = Depends(get_db)):
     else:
         raise HTTPException(status_code=404, detail="Employee not found")
         
-    return {"message": "deleted"}
+    return {"message": f"Employee with id {employee_id} successfuly deleted"}

@@ -5,9 +5,9 @@ from typing import Optional
 
 class EmployeeBase(BaseModel):
     first_name  : str
-    last_name : str
-    email       : str
-    is_admin    : bool
+    last_name   : str
+    email       : Optional[str] = None
+    is_admin    : bool = False
     
 class EmployeeCreate(EmployeeBase):
     pass
@@ -15,7 +15,7 @@ class EmployeeCreate(EmployeeBase):
     
 class EmployeeUpdate(BaseModel):
     first_name  : Optional[str] = None
-    last_name : Optional[str] = None
+    last_name   : Optional[str] = None
     email       : Optional[str] = None
     is_admin    : Optional[bool]= None
 

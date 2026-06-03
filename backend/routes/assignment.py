@@ -1,3 +1,4 @@
+from datetime import datetime
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
@@ -94,9 +95,34 @@ def delete_assignment(assignment_id: int, db: Session = Depends(get_db)):
     assignment = db.query(Assignment).filter(Assignment.id == assignment_id).first()
 
     if assignment:
+        assignment.item.status = "available"
         db.delete(assignment)
         db.commit()
     else:
         raise HTTPException(status_code=404, detail="Assignment not found")
         
-    return {"message": "deleted"}
+    return {"message": f"Assignment with id {assignment_id} successfuly deleted"}
+
+
+@router.patch("/{assignment_id}/return")
+def return_assignment(assignment_id: int,db: Session = Depends(get_db)):
+    assignment = (
+        db.query(Assignment)
+        .filter(Assignment.id == assignment_id).first()
+    )
+
+    if not assignment: raise HTTPException(status_code=404, detail="Assignment not found")
+
+    # prevent double return
+    if assignment.returned_at: raise HTTPException(status_code=400, detail="Item already returned")
+
+    assignment.returned_at = datetime.now()
+
+    assignment.item.status = "available"
+
+    db.commit()
+    db.refresh(assignment)
+
+    return {
+        "message": "Item returned successfully"
+    }

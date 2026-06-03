@@ -78,5 +78,5 @@ def delete_location(location_id: int, db: Session = Depends(get_db)):
     db.delete(location)
     db.commit()    
         
-    return {"message": "location with id {location_id} successfuly deleted"}
+    return {"message": f"Location with id {location_id} successfuly deleted"}
 

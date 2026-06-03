@@ -14,13 +14,12 @@ class AssignmentCreate(AssignmentBase):
 
 
 class AssignmentUpdate(BaseModel):
-    returned_at: Optional[datetime] = None
+    # returned_at: Optional[datetime] = None
     notes: Optional[str] = None
 
 
 class AssignmentResponse(AssignmentBase):
     id: int
-
     assigned_at: datetime
     returned_at: Optional[datetime]
 

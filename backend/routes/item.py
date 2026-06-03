@@ -77,4 +77,4 @@ def delete_item(item_id: int, db: Session = Depends(get_db)):
     db.delete(item)
     db.commit()
 
-    return {"message": "deleted"}
+    return {"message": f"Item with id {item_id} successfuly deleted"}

@@ -10,7 +10,7 @@ class Employee(Base):
     
     first_name = Column(String, nullable=False)
     last_name = Column(String, nullable=False)
-    email = Column(String, nullable=False)
+    email = Column(String, nullable=True, unique=True)
     is_admin = Column(Boolean, nullable=False)
     
     created_at = Column(DateTime(timezone=True), server_default=func.now())
