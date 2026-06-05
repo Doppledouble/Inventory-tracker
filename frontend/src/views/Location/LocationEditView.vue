@@ -2,42 +2,41 @@
 import { ref, onMounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
 
-import EmployeeForm from "../components/EmployeeForm.vue";
-import { getEmployeeById,updateEmployee } from "../services/employeeService";
+import LocationForm from "../../components/LocationForm.vue";
+import { getLocationById,updateLocation } from "../../services/locationService.js";
 
 const route = useRoute();
 const router = useRouter();
 
-const employeeId = route.params.id;
+const locationId = route.params.id;
 
-console.log("employeeId:", employeeId);
+console.log("locationId:", locationId);
 
 const loading = ref(false);
 
-const employee = ref({
-  first_name: "",
-  last_name: "",
-  email: "",
-  is_admin: false,
+const location = ref({
+  city: "",
+  location_name: "",
+  description: "",
 });
 
 onMounted(async () => {
   try {
-    const response = await getEmployeeById(employeeId);
+    const response = await getLocationById(locationId);
 
-    employee.value = response.data;
+    location.value = response.data;
   } catch (error) {
     console.error(error);
   }
 });
 
-const handleSubmit = async (employeeData) => {
+const handleSubmit = async (locationData) => {
   try {
     loading.value = true;
 
-    await updateEmployee(employeeId, employeeData);
+    await updateLocation(locationId, locationData);
 
-    router.push("/employees");
+    router.push("/locations");
   } catch (error) {
     console.error(error);
   } finally {
@@ -46,26 +45,26 @@ const handleSubmit = async (employeeData) => {
 };
 
 const handleCancel = () => {
-  router.push("/employees");
+  router.push("/locations");
 };
 </script>
 
 <template>
-  <section class="container employee-create-page">
+  <section class="container create-page">
     <div class="section-header">
       <div class="section-tag">
         Employee Management
       </div>
 
       <h1 class="section-title">
-        Update Karyawan
+        Update Lokasi
       </h1>
     </div>
 
-    <EmployeeForm
-      :initial-data="employee"
+    <LocationForm
+      :initial-data="location"
       :loading="loading"
-      submit-label="Update Karyawan"
+      submit-label="Update Lokasi"
       @submit="handleSubmit"
       @cancel="handleCancel"
     />

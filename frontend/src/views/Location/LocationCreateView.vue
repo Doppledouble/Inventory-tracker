@@ -1,20 +1,20 @@
 <script setup>
 import { ref } from "vue";
-import { createEmployee } from "../services/employeeService";
+import { createLocation } from "../../services/locationService.js";
 import { useRouter } from "vue-router";
-import EmployeeForm from "../components/EmployeeForm.vue";
+import LocationForm from "../../components/LocationForm.vue";
 
 const router = useRouter();
 
 const loading = ref(false);
 
-const handleSubmit = async (employeeData) => {
+const handleSubmit = async (locationData) => {
   try {
     loading.value = true;
 
-    await createEmployee(employeeData);
+    await createLocation(locationData);
 
-    router.push("/employees");
+    router.push("/locations");
   } catch (error) {
     console.error(error);
   } finally {
@@ -23,25 +23,25 @@ const handleSubmit = async (employeeData) => {
 };
 
 const handleCancel = () => {
-  router.push("/employees");
+  router.push("/locations");
 };
 </script>
 
 <template>
-  <section class="container employee-create-page">
+  <section class="container create-page">
     <div class="section-header">
       <div class="section-tag">
         Employee Management
       </div>
 
       <h1 class="section-title">
-        Tambah Karyawan
+        Tambah Lokasi
       </h1>
     </div>
 
-    <EmployeeForm
+    <LocationForm
       :loading="loading"
-      submit-label="Tambah Karyawan"
+      submit-label="Tambah Lokasi"
       @submit="handleSubmit"
       @cancel="handleCancel"
     />

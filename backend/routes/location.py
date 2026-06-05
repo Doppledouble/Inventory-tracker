@@ -37,7 +37,7 @@ def get_locations(db:Session = Depends(get_db)):
     return db.query(Location).all()
 
 
-@router.get("/{location_id}", response_model=list[LocationResponse])
+@router.get("/{location_id}", response_model=LocationResponse)
 def get_location(location_id: int, db: Session = Depends(get_db)):
     location = db.query(Location).filter(Location.id == location_id).first()
 

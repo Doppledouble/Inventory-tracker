@@ -1,46 +1,46 @@
 <script setup>
 import { ref, onMounted } from "vue";
-import { getEmployees,deleteEmployee } from "../services/employeeService";
+import { getLocations,deleteLocation } from "../../services/locationService.js";
 import { useRouter } from "vue-router";
 
 const router = useRouter();
-const employees = ref([]);
+const locations = ref([]);
 
-const addEmployee = () => {
-  router.push("/employees/create");
+const addLocation = () => {
+  router.push("/locations/create");
 };
 
-const editEmployee = (id) => {
-  router.push(`/employees/${id}/edit`);
+const editLocation = (id) => {
+  router.push(`/locations/${id}/edit`);
 };
 
-const prefetchEmployeeCreate = () => {
-  import("./EmployeeCreateView.vue");
+const prefetchLocationCreate = () => {
+  import("./LocationCreateView.vue");
 };
 
-const loadEmployees = async () => {
+const loadLocations = async () => {
   try {
-    const response = await getEmployees();
-    employees.value = response.data;
+    const response = await getLocations();
+    locations.value = response.data;
   } catch (error) {
     console.error(error);
   }
 };
 
-onMounted(loadEmployees);
+onMounted(loadLocations);
 
-const deleteEmployeeHandler = async (id) => {
+const deleteLocationHandler = async (id) => {
   const confirmed = confirm(
-    "Yakin ingin menghapus karyawan ini?"
+    "Yakin ingin menghapus lokasi ini?"
   );
 
   if (!confirmed) return;
 
   try {
-    await deleteEmployee(id);
+    await deleteLocation(id);
 
     // Refresh data
-    await loadEmployees();
+    await loadLocations();
   } catch (error) {
     console.error(error);
   }
@@ -48,7 +48,7 @@ const deleteEmployeeHandler = async (id) => {
 </script>
 
 <template>
-  <section class="container employee-page">
+  <section class="container location-page">
     <!-- HEADER -->
     <div class="section-header">
       <div class="section-tag">
@@ -56,63 +56,63 @@ const deleteEmployeeHandler = async (id) => {
       </div>
 
       <h1 class="section-title">
-        Daftar Karyawan
+        Daftar Lokasi
       </h1>
     </div>
     
     <!-- SECTION 1 : DASHBOARD -->
     <div class="card dashboard-table-area">
       <div class="dash-table-header">
-        <span>Total Karyawan: {{ employees.length }}</span>
+        <span>Total Lokasi: {{ locations.length }}</span>
 
         <button
           class="btn-acid"
-          @pointerenter="prefetchEmployeeCreate"
-          @click="addEmployee"
+          @pointerenter="prefetchLocationCreate"
+          @click="addLocation"
         >
-          + Tambah Karyawan
+          + Tambah Lokasi
         </button>
       </div>
       
       <div class="dash-table">
         <div class="dash-table-row head">
-          <div class="dash-cell">Nama Depan</div>
-          <div class="dash-cell">Nama Belakang</div>
-          <div class="dash-cell">ID</div>
+          <div class="dash-cell">Nama Lokasi</div>
+          <div class="dash-cell">Kota</div>
+          <div class="dash-cell">Deskripsi</div>
           <div class="dash-cell">Aksi</div>
         </div>
 
         <div
-          v-for="employee in employees"
-          :key="employee.id"
+          v-for="location in locations"
+          :key="location.id"
           class="dash-table-row"
         >
           <div class="dash-cell dash-cell-name">
             <div class="dash-cell-icon">
-              {{ employee.first_name?.charAt(0) }}
+              {{ location.location_name?.charAt(0) }}
             </div>
-            {{ employee.first_name }}
+            {{ location.location_name }}
           </div>
 
           <div class="dash-cell">
-            {{ employee.last_name }}
+            {{ location.city }}
           </div>
 
           <div class="dash-cell">
-            #{{ employee.id }}
+            {{ location.description }}
           </div>
 
           <div class="dash-cell action-buttons">
             <button
               class="btn-ghost btn-small"
-              @click="editEmployee(employee.id)"
+              @click="editLocation(location.id)"
             >
               Edit
             </button>
 
             <button
               class="btn-danger"
-              @click="deleteEmployeeHandler(employee.id)"
+              @click="deleteLocationHandler(location.id)"
             >
               Hapus
             </button>
@@ -120,10 +120,10 @@ const deleteEmployeeHandler = async (id) => {
         </div>
 
         <div
-          v-if="employees.length === 0"
+          v-if="locations.length === 0"
           class="empty-state"
         >
-          Belum ada data karyawan.
+          Belum ada data lokasi.
         </div>
       </div>
     </div>
@@ -131,7 +131,7 @@ const deleteEmployeeHandler = async (id) => {
 </template>
 
 <style>
-.employee-page {
+.location-page {
   padding-top: 80px;
 }
 

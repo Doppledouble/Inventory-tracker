@@ -1391,3 +1391,7 @@ img {
         transform: none;
     }
 }
+
+.create-page {
+  padding: 24px;
+}

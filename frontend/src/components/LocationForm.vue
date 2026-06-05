@@ -5,10 +5,9 @@ const props = defineProps({
   initialData: {
     type: Object,
     default: () => ({
-      first_name: "",
-      last_name: "",
-      email: null,
-      is_admin: false,
+      city: "",
+      location_name: "",
+      decription: "",
     }),
   },
 
@@ -29,10 +28,9 @@ const emit = defineEmits([
 ]);
 
 const form = ref({
-  first_name: "",
-  last_name: "",
-  email: null,
-  is_admin: false,
+  city: "",
+  location_name: "",
+  decription: "",
 });
 
 watch(
@@ -45,56 +43,41 @@ watch(
 
 const submitForm = () => {
   emit("submit", 
-  { ...form.value,
-    email:
-      form.value.email?.trim() || null,
-   });
+  { ...form.value, });
 };
 </script>
 
 <template>
-  <div class="card employee-form-card">
+  <div class="card location-form-card">
     <form @submit.prevent="submitForm">
 
       <div class="form-group">
-        <label>Nama Depan</label>
+        <label>Kota</label>
 
         <input
-          v-model="form.first_name"
+          v-model="form.city"
           type="text"
           required
         />
       </div>
 
       <div class="form-group">
-        <label>Nama Belakang</label>
+        <label>Nama Lokasi</label>
 
         <input
-          v-model="form.last_name"
+          v-model="form.location_name"
           type="text"
           required
         />
       </div>
 
       <div class="form-group">
-        <label>Email</label>
+        <label>Deskripsi</label>
 
         <input
-          v-model="form.email"
-          type="email"
+          v-model="form.decription"
+          type="text"
         />
-      </div>
-
-      <div class="form-checkbox">
-        <input
-          id="is_admin"
-          v-model="form.is_admin"
-          type="checkbox"
-        />
-
-        <label for="is_admin">
-          Administrator
-        </label>
       </div>
 
       <div class="form-actions">
@@ -122,7 +105,7 @@ const submitForm = () => {
 </template>
 
 <style scoped>
-.employee-form-card {
+.location-form-card {
   max-width: 700px;
   margin: 0 auto;
   padding: 32px;
@@ -143,12 +126,6 @@ const submitForm = () => {
   padding: 14px;
   border: 1px solid var(--border);
   border-radius: 10px;
-}
-
-.form-checkbox {
-  display: flex;
-  gap: 10px;
-  align-items: center;
 }
 
 .form-actions {
