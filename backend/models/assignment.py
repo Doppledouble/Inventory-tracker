@@ -12,8 +12,13 @@ class Assignment(Base):
 
     item_id = Column(Integer, ForeignKey("items.id"), nullable=False)
     employee_id = Column(Integer, ForeignKey("employees.id"), nullable=False)
+    location_id = Column(Integer, ForeignKey("locations.id"), nullable=False)
+    
+    quantity = Column(Integer, nullable=False, default=1)
+    
     assigned_at = Column(DateTime(timezone=True), server_default=func.now())
     returned_at = Column(DateTime(timezone=True), nullable=True)
+    
     notes = Column(String, nullable=True)
 
     # relationships
@@ -24,5 +29,10 @@ class Assignment(Base):
 
     employee = relationship(
         "Employee",
+        back_populates="assignments"
+    )
+    
+    location = relationship(
+        "Location",
         back_populates="assignments"
     )

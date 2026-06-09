@@ -1,46 +1,46 @@
 <script setup>
 import { ref, onMounted } from "vue";
-import { getLocations,deleteLocation } from "../../services/locationService.js";
+import { getItems,deleteItem } from "../../services/itemService.js";
 import { useRouter } from "vue-router";
 
 const router = useRouter();
-const locations = ref([]);
+const items = ref([]);
 
-const addLocation = () => {
-  router.push("/locations/create");
+const addItem = () => {
+  router.push("/items/create");
 };
 
-const editLocation = (id) => {
-  router.push(`/locations/${id}/edit`);
+const editItem = (id) => {
+  router.push(`/items/${id}/edit`);
 };
 
-const prefetchLocationCreate = () => {
-  import("./LocationCreateView.vue");
+const prefetchItemCreate = () => {
+  import("./ItemCreateView.vue");
 };
 
-const loadLocations = async () => {
+const loadItems = async () => {
   try {
-    const response = await getLocations();
-    locations.value = response.data;
+    const response = await getItems();
+    items.value = response.data;
   } catch (error) {
     console.error(error);
   }
 };
 
-onMounted(loadLocations);
+onMounted(loadItems);
 
-const deleteLocationHandler = async (id) => {
+const deleteItemHandler = async (id) => {
   const confirmed = confirm(
-    "Yakin ingin menghapus lokasi ini?"
+    "Yakin ingin menghapus barang ini?"
   );
 
   if (!confirmed) return;
 
   try {
-    await deleteLocation(id);
+    await deleteItem(id);
 
     // Refresh data
-    await loadLocations();
+    await loadItems();
   } catch (error) {
     console.error(error);
   }
@@ -48,7 +48,7 @@ const deleteLocationHandler = async (id) => {
 </script>
 
 <template>
-  <section class="location-page">
+  <section class="item-page">
     <!-- HEADER -->
     <div class="section-header">
       <div class="section-tag">
@@ -56,63 +56,71 @@ const deleteLocationHandler = async (id) => {
       </div>
 
       <h1 class="section-title">
-        Daftar Lokasi
+        Daftar Barang
       </h1>
     </div>
     
     <!-- SECTION 1 : DASHBOARD -->
     <div class="card dashboard-table-area">
       <div class="dash-table-header">
-        <span>Total Lokasi: {{ locations.length }}</span>
+        <span>Total Barang: {{ items.length }}</span>
 
         <button
           class="btn-acid"
-          @pointerenter="prefetchLocationCreate"
-          @click="addLocation"
+          @pointerenter="prefetchItemCreate"
+          @click="addItem"
         >
-          + Tambah Lokasi
+          + Tambah Barang
         </button>
       </div>
       
       <div class="dash-table">
         <div class="dash-table-row head">
-          <div class="dash-cell">Nama Lokasi</div>
-          <div class="dash-cell">Kota</div>
-          <div class="dash-cell">Deskripsi</div>
-          <div class="dash-cell">Aksi</div>
+          <div class="dash-cell">Nama Barang</div>
+          <div class="dash-cell">Kategori</div>
+          <div class="dash-cell">Jumlah</div>
+          <!-- <div class="dash-cell">Status</div> -->
         </div>
 
         <div
-          v-for="location in locations"
-          :key="location.id"
+          v-for="item in items"
+          :key="item.id"
           class="dash-table-row"
         >
           <div class="dash-cell dash-cell-name">
             <div class="dash-cell-icon">
-              {{ location.location_name?.charAt(0) }}
+              {{ item.name?.charAt(0) }}
             </div>
-            {{ location.location_name }}
+            {{ item.name }}
           </div>
 
           <div class="dash-cell">
-            {{ location.city }}
+            {{ item.category }}
           </div>
 
           <div class="dash-cell">
-            {{ location.description }}
+            {{ item.count }}
           </div>
+
+          <!-- <div class="dash-cell">
+            {{ item.status }}
+          </div>
+
+          <div class="dash-cell">
+            {{ item.status }}
+          </div> -->
 
           <div class="dash-cell action-buttons">
             <button
               class="btn-ghost btn-small"
-              @click="editLocation(location.id)"
+              @click="editItem(item.id)"
             >
               Edit
             </button>
 
             <button
               class="btn-danger"
-              @click="deleteLocationHandler(location.id)"
+              @click="deleteItemHandler(item.id)"
             >
               Hapus
             </button>
@@ -120,10 +128,10 @@ const deleteLocationHandler = async (id) => {
         </div>
 
         <div
-          v-if="locations.length === 0"
+          v-if="items.length === 0"
           class="empty-state"
         >
-          Belum ada data lokasi.
+          Belum ada data barang.
         </div>
       </div>
     </div>
@@ -131,7 +139,7 @@ const deleteLocationHandler = async (id) => {
 </template>
 
 <style scoped>
-.location-page {
+.item-page {
   padding-top: 80px;
 }
 
@@ -170,6 +178,22 @@ const deleteLocationHandler = async (id) => {
   background: var(--accent);
   color: var(--text);
   font-weight: 700;
+}
+
+.dash-table-row {
+    display: grid;
+    grid-template-columns:
+        1fr
+        1fr
+        0.5fr
+        1fr
+        1fr
+        1fr;
+    gap: 16px;
+    padding: 12px 20px;
+    align-items: center;
+    border-bottom: 1px solid var(--border-light);
+    font-size: 13px;
 }
 
 </style>

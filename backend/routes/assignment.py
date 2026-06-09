@@ -6,6 +6,9 @@ from database import get_db
 from models.assignment import Assignment
 from models.item import Item
 from models.employee import Employee
+from models.transaction import Transaction
+from models.location import Location
+from models.enums import TransactionType
 from schemas.assignment import AssignmentCreate, AssignmentUpdate
 
 router = APIRouter(prefix="/assignments", tags=["Assignments"])
@@ -23,29 +26,39 @@ def create_assignment(assignment: AssignmentCreate, db: Session = Depends(get_db
     if not employee:
         raise HTTPException(status_code=404, detail="Employee not found")
     
-    # prevent double active assignment
-    existing_assignment = (db.query(Assignment).filter(
-        Assignment.item_id == assignment.item_id,
-        Assignment.returned_at.is_(None)).first()
-    )
-    if existing_assignment:
-        raise HTTPException(
-            status_code=400,
-            detail="Item is already assigned"
-        )
+    # validate location exists
+    location = (db.query(Location).filter(Location.id == assignment.location_id).first())
+    if not location:
+        raise HTTPException(status_code=404, detail="Location not found")
+    
+    if item.count < assignment.quantity:
+        raise HTTPException(status_code=400, detail="Insufficient stock")    
+    
+    item.count -= assignment.quantity
     
     new_assignment = Assignment(
-        item_id  = assignment.item_id,
-        employee_id   = assignment.employee_id,
-        notes       = assignment.notes    
+        item_id=assignment.item_id,
+        employee_id=assignment.employee_id,
+        location_id=assignment.location_id,
+        quantity=assignment.quantity,
+        notes=assignment.notes
+    )
+        
+    transaction = Transaction(
+        item_id=item.id,
+        employee_id=employee.id,
+        quantity=-assignment.quantity,
+        transaction_type=TransactionType.ASSIGNMENT,
+        notes=assignment.notes
     )
     
-    item.status = "assigned"
     
     db.add(new_assignment)
+    db.add(transaction)
+
     db.commit()
     db.refresh(new_assignment)
-    
+
     return new_assignment
 
 
@@ -76,13 +89,6 @@ def update_assignment(assignment_id: int, assignment_data: AssignmentUpdate, db:
     for key, value in update_data.items():
         setattr(assignment, key, value)
         
-    #auto-update item status if item was given back by employee
-    if not assignment.returned_at:
-        assignment.item.status = "assigned"
-    else:
-        assignment.item.status = "available"
-    
-        
         
     db.commit()
     db.refresh(assignment)
@@ -95,7 +101,6 @@ def delete_assignment(assignment_id: int, db: Session = Depends(get_db)):
     assignment = db.query(Assignment).filter(Assignment.id == assignment_id).first()
 
     if assignment:
-        assignment.item.status = "available"
         db.delete(assignment)
         db.commit()
     else:
@@ -117,9 +122,17 @@ def return_assignment(assignment_id: int,db: Session = Depends(get_db)):
     if assignment.returned_at: raise HTTPException(status_code=400, detail="Item already returned")
 
     assignment.returned_at = datetime.now()
+    assignment.item.count += assignment.quantity
 
-    assignment.item.status = "available"
-
+    transaction = Transaction(
+        item_id=assignment.item_id,
+        employee_id=assignment.employee_id,
+        quantity=assignment.quantity,
+        transaction_type=TransactionType.RETURN,
+        notes="Item returned"
+    )   
+    
+    db.add(transaction)
     db.commit()
     db.refresh(assignment)
 

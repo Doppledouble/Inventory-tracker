@@ -14,8 +14,7 @@ def create_item(item: ItemCreate, db: Session = Depends(get_db)):
     new_item = Item(
         name=item.name,
         category=item.category,
-        count=item.count,
-        location_id=item.location_id
+        count=item.count
     )
 
     db.add(new_item)
@@ -38,11 +37,6 @@ def get_item(item_id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Item not found")
 
     return item
-
-
-@router.get("/location/{location_id}")
-def get_items_by_location(location_id: int, db: Session = Depends(get_db)):
-    return db.query(Item).filter(Item.location_id == location_id).all()
 
 
 @router.patch("/{item_id}")

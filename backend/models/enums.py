@@ -1,8 +1,9 @@
 from enum import Enum
 
 
-class ItemStatus(str, Enum):
-    AVAILABLE = "available"
-    ASSIGNED = "assigned"
-    MAINTENANCE = "maintenance"
-    OTHERS = "others"
+class TransactionType(str, Enum):
+    PURCHASE = "purchase"
+    ASSIGNMENT = "assignment"
+    RETURN = "return"
+    DAMAGE = "damage"
+    ADJUSTMENT = "adjustment"

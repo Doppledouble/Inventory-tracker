@@ -48,7 +48,7 @@ const deleteEmployeeHandler = async (id) => {
 </script>
 
 <template>
-  <section class="container employee-page">
+  <section class=" employee-page">
     <!-- HEADER -->
     <div class="section-header">
       <div class="section-tag">
@@ -130,7 +130,7 @@ const deleteEmployeeHandler = async (id) => {
   </section>
 </template>
 
-<style>
+<style scoped>
 .employee-page {
   padding-top: 80px;
 }

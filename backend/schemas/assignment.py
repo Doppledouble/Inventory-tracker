@@ -6,7 +6,9 @@ from typing import Optional
 class AssignmentBase(BaseModel):
     item_id: int
     employee_id: int
-    notes: Optional[str] = None
+    location_id: int
+    quantity: int
+    notes: str | None = None
 
 
 class AssignmentCreate(AssignmentBase):

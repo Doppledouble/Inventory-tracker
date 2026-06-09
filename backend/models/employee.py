@@ -18,5 +18,6 @@ class Employee(Base):
     
     #relationships\
     assignments = relationship("Assignment", back_populates="employee", cascade="all, delete-orphan")
+    transactions = relationship("Transaction",back_populates="employee")
     # items = relationship("Item", back_populates="employee")
     

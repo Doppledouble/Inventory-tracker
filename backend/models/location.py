@@ -16,5 +16,5 @@ class Location(Base):
     updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
     
     #relations
-    items = relationship("Item", back_populates="location")
+    assignments = relationship("Assignment", back_populates="location")
     
