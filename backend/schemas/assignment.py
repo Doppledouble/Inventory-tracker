@@ -18,12 +18,42 @@ class AssignmentCreate(AssignmentBase):
 class AssignmentUpdate(BaseModel):
     # returned_at: Optional[datetime] = None
     notes: Optional[str] = None
-
-
-class AssignmentResponse(AssignmentBase):
+    
+    
+class ItemBasic(BaseModel):
     id: int
-    assigned_at: datetime
-    returned_at: Optional[datetime]
+    name: str
+    
+    class Config:
+        from_attributes = True
+        
+        
+class EmployeeBasic(BaseModel):
+    id: int
+    first_name: str
+    last_name: str
+    
+    class Config:
+        from_attributes = True
+        
+        
+class LocationBasic(BaseModel):
+    id: int
+    location_name: str
+    
+    class Config:
+        from_attributes = True
+
+
+class AssignmentResponse(BaseModel):
+    id: int
+    quantity: int    
+    assigned_at:datetime
+    returned_at:datetime | None
+
+    item: ItemBasic       # { id, name }
+    employee: EmployeeBasic  # { id, first_name, last_name }
+    location: LocationBasic  # { id, name }
 
     class Config:
         from_attributes = True

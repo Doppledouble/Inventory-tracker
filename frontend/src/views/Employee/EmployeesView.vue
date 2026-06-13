@@ -132,7 +132,7 @@ const deleteEmployeeHandler = async (id) => {
 
 <style scoped>
 .employee-page {
-  padding-top: 80px;
+  padding-top: 20px;
 }
 
 .action-buttons {

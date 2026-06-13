@@ -16,8 +16,7 @@ class Employee(Base):
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
     
-    #relationships\
+    #relationships
     assignments = relationship("Assignment", back_populates="employee", cascade="all, delete-orphan")
     transactions = relationship("Transaction",back_populates="employee")
-    # items = relationship("Item", back_populates="employee")
     

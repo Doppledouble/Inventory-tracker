@@ -27,15 +27,6 @@ const props = defineProps({
     
 const locations = ref([])
 
-onMounted(async () => {
-  try {
-    const response = await api.get("/locations")
-    locations.value = response.data
-  } catch (error) {
-    console.error("Failed to load locations", error)
-  }
-})
-
 const emit = defineEmits([
   "submit",
   "cancel"

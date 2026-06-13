@@ -8,6 +8,8 @@ const router = createRouter({
       path: '/',
       component: MainLayout,
       children: [
+
+        // EMPLOYEE ROUTES
         {
           path: 'employees',
           name: 'employees',
@@ -23,6 +25,8 @@ const router = createRouter({
           name: 'employee-edit',
           component: () => import('../views/Employee/EmployeeEditView.vue')
         },
+
+        // LOCATION ROUTES
         {
           path: 'locations',
           name: 'locations',
@@ -38,6 +42,8 @@ const router = createRouter({
           name: 'location-edit',
           component: () => import('../views/Location/LocationEditView.vue')
         },
+
+        // ITEM ROUTES
         {
           path: 'items',
           name: 'items',
@@ -47,6 +53,18 @@ const router = createRouter({
           path: 'items/create',
           name: 'item-create',
           component: () => import('../views/Item/ItemCreateView.vue')
+        },
+
+        // ASSIGNMENT ROUTES
+        {
+          path: 'assignments',
+          name: 'assignments',
+          component: () => import('../views/Assignment/AssignmentsView.vue')
+        },
+        {
+          path: 'assignments/create',
+          name: 'assignment-create',
+          component: () => import('../views/Assignment/AssignmentCreateView.vue')
         },
       ]
     },

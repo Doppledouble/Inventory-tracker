@@ -1,46 +1,37 @@
 <script setup>
 import { ref, onMounted } from "vue";
-import { getLocations,deleteLocation } from "../../services/locationService.js";
+import { getActiveAssignments,returnAssignment } from "../../services/assignmentService.js";
 import { useRouter } from "vue-router";
 
 const router = useRouter();
-const locations = ref([]);
+const assignments = ref([]);
 
-const addLocation = () => {
-  router.push("/locations/create");
+
+const editAssignment = (id) => {
+  router.push(`/assignments/${id}/edit`);
 };
 
-const editLocation = (id) => {
-  router.push(`/locations/${id}/edit`);
-};
-
-const prefetchLocationCreate = () => {
-  import("./LocationCreateView.vue");
-};
-
-const loadLocations = async () => {
+const loadAssignments = async () => {
   try {
-    const response = await getLocations();
-    locations.value = response.data;
+    const response = await getActiveAssignments();
+    assignments.value = response.data;
   } catch (error) {
     console.error(error);
   }
 };
 
-onMounted(loadLocations);
+onMounted(loadAssignments);
 
-const deleteLocationHandler = async (id) => {
-  const confirmed = confirm(
-    "Yakin ingin menghapus lokasi ini?"
-  );
+const returnAssignmentHandler = async (id) => {
+  const confirmed = confirm("Yakin ingin mengembalikan barang ini?");
 
   if (!confirmed) return;
 
   try {
-    await deleteLocation(id);
+    await returnAssignment(id);
 
     // Refresh data
-    await loadLocations();
+    await loadAssignments();
   } catch (error) {
     console.error(error);
   }
@@ -48,7 +39,7 @@ const deleteLocationHandler = async (id) => {
 </script>
 
 <template>
-  <section class="location-page">
+  <section class="assignment-page">
     <!-- HEADER -->
     <div class="section-header">
       <div class="section-tag">
@@ -56,74 +47,76 @@ const deleteLocationHandler = async (id) => {
       </div>
 
       <h1 class="section-title">
-        Daftar Lokasi
+        Daftar Barang yang Digunakan
       </h1>
     </div>
     
     <!-- SECTION 1 : DASHBOARD -->
     <div class="card dashboard-table-area">
       <div class="dash-table-header">
-        <span>Total Lokasi: {{ locations.length }}</span>
-
-        <button
-          class="btn-acid"
-          @pointerenter="prefetchLocationCreate"
-          @click="addLocation"
-        >
-          + Tambah Lokasi
-        </button>
+        <span>Total Barang: {{ assignments.length }}</span>
       </div>
       
       <div class="dash-table">
         <div class="dash-table-row head">
-          <div class="dash-cell">Nama Lokasi</div>
-          <div class="dash-cell">Kota</div>
-          <div class="dash-cell">Deskripsi</div>
-          <div class="dash-cell">Aksi</div>
+          <div class="dash-cell">Nama Barang</div>
+          <div class="dash-cell">Nama PIC</div>
+          <div class="dash-cell">Jumlah</div>
+          <div class="dash-cell">Lokasi</div>
+          <div class="dash-cell">Tanggal Dipakai</div>
+          
         </div>
 
         <div
-          v-for="location in locations"
-          :key="location.id"
+          v-for="assignment in assignments"
+          :key="assignment.id"
           class="dash-table-row"
         >
           <div class="dash-cell dash-cell-name">
             <div class="dash-cell-icon">
-              {{ location.location_name?.charAt(0) }}
+              {{ assignment.item?.name?.charAt(0) }}
             </div>
-            {{ location.location_name }}
+            {{ assignment.item?.name }}
           </div>
 
           <div class="dash-cell">
-            {{ location.city }}
+            {{ assignment.employee?.first_name }} {{ assignment.employee?.last_name }}
           </div>
 
           <div class="dash-cell">
-            {{ location.description }}
+            {{ assignment.quantity }}
+          </div>
+
+          <div class="dash-cell">
+            {{ assignment.location?.location_name }}
+          </div>
+
+          <div class="dash-cell">
+            {{ new Date(assignment.assigned_at).toLocaleDateString() }}
           </div>
 
           <div class="dash-cell action-buttons">
             <button
               class="btn-ghost btn-small"
-              @click="editLocation(location.id)"
+              @click="editAssignment(assignment.id)"
             >
               Edit
             </button>
 
             <button
-              class="btn-danger"
-              @click="deleteLocationHandler(location.id)"
+              class="btn-danger btn-small"
+              @click="returnAssignmentHandler(assignment.id)"
             >
-              Hapus
+              Kembalikan
             </button>
           </div>
         </div>
 
         <div
-          v-if="locations.length === 0"
+          v-if="assignments.length === 0"
           class="empty-state"
         >
-          Belum ada data lokasi.
+          Belum ada data barang.
         </div>
       </div>
     </div>
@@ -131,7 +124,7 @@ const deleteLocationHandler = async (id) => {
 </template>
 
 <style scoped>
-.location-page {
+.assignment-page {
   padding-top: 20px;
 }
 
@@ -170,6 +163,16 @@ const deleteLocationHandler = async (id) => {
   background: var(--accent);
   color: var(--text);
   font-weight: 700;
+}
+
+.dash-table-row {
+  display: grid;
+  grid-template-columns: 1fr 0.5fr 0.5fr 0.5fr 1fr 0.5fr;
+  gap: 16px;
+  padding: 12px 20px;
+  align-items: center;
+  border-bottom: 1px solid var(--border-light);
+  font-size: 13px;
 }
 
 </style>

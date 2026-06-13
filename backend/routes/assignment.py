@@ -1,6 +1,6 @@
 from datetime import datetime
-from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy.orm import Session
+from fastapi import APIRouter, Depends, HTTPException, Query
+from sqlalchemy.orm import Session, joinedload
 
 from database import get_db
 from models.assignment import Assignment
@@ -9,7 +9,7 @@ from models.employee import Employee
 from models.transaction import Transaction
 from models.location import Location
 from models.enums import TransactionType
-from schemas.assignment import AssignmentCreate, AssignmentUpdate
+from schemas.assignment import AssignmentCreate, AssignmentUpdate, AssignmentResponse
 
 router = APIRouter(prefix="/assignments", tags=["Assignments"])
 
@@ -62,9 +62,17 @@ def create_assignment(assignment: AssignmentCreate, db: Session = Depends(get_db
     return new_assignment
 
 
-@router.get("/")
-def get_assignments(db: Session = Depends(get_db)):
-    return db.query(Assignment).all()
+@router.get("/", response_model=list[AssignmentResponse])
+def get_assignments(active: bool | None = Query(None, description="Filter by active status"), db: Session = Depends(get_db)):
+    query = db.query(Assignment).options(
+        joinedload(Assignment.item),
+        joinedload(Assignment.employee),
+        joinedload(Assignment.location)
+    )
+    if active is not None:
+        query = query.filter(Assignment.returned_at.is_(None) if active else Assignment.returned_at.isnot(None))
+
+    return query.all()
 
 
 @router.get("/{assignment_id}")

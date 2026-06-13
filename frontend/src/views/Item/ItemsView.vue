@@ -1,6 +1,7 @@
 <script setup>
 import { ref, onMounted } from "vue";
 import { getItems,deleteItem } from "../../services/itemService.js";
+import { createAssignment } from "../../services/assignmentService.js"
 import { useRouter } from "vue-router";
 
 const router = useRouter();
@@ -12,6 +13,10 @@ const addItem = () => {
 
 const editItem = (id) => {
   router.push(`/items/${id}/edit`);
+};
+
+const assignItem = (id) => {
+  router.push(`/assignments/create`);
 };
 
 const prefetchItemCreate = () => {
@@ -79,7 +84,6 @@ const deleteItemHandler = async (id) => {
           <div class="dash-cell">Nama Barang</div>
           <div class="dash-cell">Kategori</div>
           <div class="dash-cell">Jumlah</div>
-          <!-- <div class="dash-cell">Status</div> -->
         </div>
 
         <div
@@ -102,24 +106,23 @@ const deleteItemHandler = async (id) => {
             {{ item.count }}
           </div>
 
-          <!-- <div class="dash-cell">
-            {{ item.status }}
-          </div>
-
-          <div class="dash-cell">
-            {{ item.status }}
-          </div> -->
-
           <div class="dash-cell action-buttons">
+            <button
+              class="btn-acid btn-small"
+              @click="assignItem(item.id)"
+            >
+              Assign
+            </button>
+            
             <button
               class="btn-ghost btn-small"
               @click="editItem(item.id)"
             >
               Edit
             </button>
-
+            
             <button
-              class="btn-danger"
+              class="btn-danger btn-small"
               @click="deleteItemHandler(item.id)"
             >
               Hapus
@@ -140,7 +143,7 @@ const deleteItemHandler = async (id) => {
 
 <style scoped>
 .item-page {
-  padding-top: 80px;
+  padding-top: 20px;
 }
 
 .action-buttons {
@@ -183,10 +186,8 @@ const deleteItemHandler = async (id) => {
 .dash-table-row {
     display: grid;
     grid-template-columns:
-        1fr
-        1fr
-        0.5fr
-        1fr
+        2fr
+        2fr
         1fr
         1fr;
     gap: 16px;
