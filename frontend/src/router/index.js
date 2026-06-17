@@ -66,6 +66,13 @@ const router = createRouter({
           name: 'assignment-create',
           component: () => import('../views/Assignment/AssignmentCreateView.vue')
         },
+
+        // TRANSACTIONS ROUTES
+        {
+          path: 'transactions',
+          name: 'transactions',
+          component: () => import('../views/Transaction/TransactionsView.vue')
+        }
       ]
     },
   ]

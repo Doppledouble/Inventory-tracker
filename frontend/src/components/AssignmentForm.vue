@@ -8,7 +8,7 @@ const props = defineProps({
   initialData: {
     type: Object,
     default: () => ({
-      item_id: "",
+      item_id:"",
       employee_id: "",
       location_id: "",
       quantity: 0,
@@ -34,13 +34,26 @@ const locations = ref([])
 
 onMounted(async () => {
   try {
-    const [itemsRes, employeesRes, locationsRes] = await Promise.all([
-      api.get("/items"),
+    const requests = [
       api.get("/employees"),
       api.get("/locations"),
-    ])
+    ]
 
-    items.value = itemsRes.data
+    // Only fetch all items if not pre-filled
+    if (!props.initialData?.item_id) {
+      requests.unshift(api.get("/items"))
+    } else {
+      // Just fetch the one item we need for display
+      requests.unshift(api.get(`/items/${props.initialData.item_id}`))
+    }
+
+    const [itemsRes, employeesRes, locationsRes] = await Promise.all(requests)
+
+    // If locked, wrap single item in array so the watch still works
+    items.value = props.initialData?.item_id 
+      ? [itemsRes.data]   // single item → array of one
+      : itemsRes.data     // full list
+
     employees.value = employeesRes.data
     locations.value = locationsRes.data
   } catch (error) {
@@ -95,6 +108,8 @@ const onLocationSelect = (option) => {
   form.value.location_id = option ? option.id : null
 }
 
+const isItemLocked = computed(() => !!props.initialData?.item_id)
+
 // Custom label combining first + last name
 const employeeLabel = (employee) => `${employee.first_name} ${employee.last_name}`
 
@@ -115,8 +130,12 @@ const submitForm = () => {
           label="name"
           track-by="id"
           placeholder="Pilih item"
+          :disabled="isItemLocked"      
           @update:model-value="onItemSelect"
         />
+        <small v-if="isItemLocked" style="color: var(--text-muted)">
+          
+        </small>
       </div>
 
       <div class="form-group">

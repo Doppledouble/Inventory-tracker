@@ -99,7 +99,7 @@ const deleteLocationHandler = async (id) => {
           </div>
 
           <div class="dash-cell">
-            {{ location.description }}
+            {{ location.description || '--' }}
           </div>
 
           <div class="dash-cell action-buttons">
@@ -172,4 +172,10 @@ const deleteLocationHandler = async (id) => {
   font-weight: 700;
 }
 
+.dash-table-row .dash-cell:not(:first-child) {
+  text-align: center;
+  justify-content: center;
+  display: flex;
+  align-items: center;
+}
 </style>

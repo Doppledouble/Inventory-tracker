@@ -1,10 +1,19 @@
 <script setup>
 import { ref } from "vue";
 import { createAssignment } from "../../services/assignmentService.js";
-import { useRouter } from "vue-router";
+import { useRouter, useRoute } from "vue-router";
 import AssignmentForm from "../../components/AssignmentForm.vue";
 
 const router = useRouter();
+const route  = useRoute();
+
+const initialData = {
+  item_id: route.query.item_id ? parseInt(route.query.item_id) : null,
+  employee_id: null,
+  location_id: null,
+  quantity: 1,
+  notes: ""
+}
 
 const loading = ref(false);
 
@@ -23,7 +32,7 @@ const handleSubmit = async (assignmentData) => {
 };
 
 const handleCancel = () => {
-  router.push("/assignments");
+  router.back();
 };
 </script>
 
@@ -40,6 +49,7 @@ const handleCancel = () => {
     </div>
 
     <AssignmentForm
+      :initialData="initialData"
       :loading="loading"
       submit-label="Assign Barang"
       @submit="handleSubmit"

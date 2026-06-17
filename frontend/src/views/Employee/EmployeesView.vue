@@ -172,4 +172,10 @@ const deleteEmployeeHandler = async (id) => {
   font-weight: 700;
 }
 
+.dash-table-row .dash-cell:not(:first-child) {
+  text-align: center;
+  justify-content: center;
+  display: flex;
+  align-items: center;
+}
 </style>

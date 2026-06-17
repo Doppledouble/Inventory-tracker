@@ -28,6 +28,10 @@
         <RouterLink to="/assignments">
           Assignments
         </RouterLink>
+
+        <RouterLink to="/transactions">
+          Transactions
+        </RouterLink>
       </nav>
     </aside>
 

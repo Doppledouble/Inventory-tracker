@@ -6,6 +6,9 @@ import { useRouter } from "vue-router";
 const router = useRouter();
 const assignments = ref([]);
 
+const addAssignment = () =>{
+  router.push("/assignments/create");
+}
 
 const editAssignment = (id) => {
   router.push(`/assignments/${id}/edit`);
@@ -47,7 +50,7 @@ const returnAssignmentHandler = async (id) => {
       </div>
 
       <h1 class="section-title">
-        Daftar Barang yang Digunakan
+        Daftar Pemakaian
       </h1>
     </div>
     
@@ -55,6 +58,13 @@ const returnAssignmentHandler = async (id) => {
     <div class="card dashboard-table-area">
       <div class="dash-table-header">
         <span>Total Barang: {{ assignments.length }}</span>
+
+        <button
+          class="btn-acid"
+          @click="addAssignment"
+        >
+          + Tambah Pemakaian
+        </button>
       </div>
       
       <div class="dash-table">
@@ -64,7 +74,7 @@ const returnAssignmentHandler = async (id) => {
           <div class="dash-cell">Jumlah</div>
           <div class="dash-cell">Lokasi</div>
           <div class="dash-cell">Tanggal Dipakai</div>
-          
+          <div class="dash-cell">Aksi</div>
         </div>
 
         <div
@@ -175,4 +185,10 @@ const returnAssignmentHandler = async (id) => {
   font-size: 13px;
 }
 
+.dash-table-row .dash-cell:not(:first-child) {
+  text-align: center;
+  justify-content: center;
+  display: flex;
+  align-items: center;
+}
 </style>

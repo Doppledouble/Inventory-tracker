@@ -1,25 +1,22 @@
 from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 
 from database import get_db
 from models.item import Item
 from models.transaction import Transaction
 from models.enums import TransactionType
 
-from schemas.transaction import (
-    StockAdd,
-    StockRemove,
-    StockAdjustment
-)
+from schemas.transaction import StockTransactionRequest, StockTransactionResponse, StockTransactionHistory, StockAdjustmentRequest
 
 router = APIRouter(prefix="/transactions",tags=["Transactions"])
 
 # Addition type transaction because of purchacing
-@router.post("/items/{item_id}/add")
-def add_stock(item_id: int, stock: StockAdd, db: Session = Depends(get_db)):
+@router.post("/items/{item_id}/add", response_model=StockTransactionResponse)
+def add_stock(item_id: int, stock: StockTransactionRequest, db: Session = Depends(get_db)):
     item = db.query(Item).filter(Item.id == item_id).first()
 
-    if not item: raise HTTPException(status_code=404, detail="Item not found")
+    if not item: 
+        raise HTTPException(status_code=404, detail="Item not found")
 
     item.count += stock.quantity
 
@@ -27,27 +24,27 @@ def add_stock(item_id: int, stock: StockAdd, db: Session = Depends(get_db)):
         item_id=item.id,
         quantity=stock.quantity,
         transaction_type=TransactionType.PURCHASE,
+        employee_id = stock.employee_id,
         notes=stock.notes
     )
 
     db.add(transaction)
 
     db.commit()
-    db.refresh(item)
+    db.refresh(transaction)
     
-    return {
-    "message": "Stock added successfully",
-    "current_stock": item.count
-    }
+    return transaction
     
 # Remove type transaction because of damaged items    
-@router.post("/items/{item_id}/remove")
-def remove_stock(item_id: int, stock: StockRemove, db: Session = Depends(get_db)):
+@router.post("/items/{item_id}/remove", response_model=StockTransactionResponse)
+def remove_stock(item_id: int, stock: StockTransactionRequest, db: Session = Depends(get_db)):
     item = db.query(Item).filter(Item.id == item_id).first()
 
-    if not item: raise HTTPException(status_code=404, detail="Item not found")
+    if not item: 
+        raise HTTPException(status_code=404, detail="Item not found")
     
-    if item.count < stock.quantity: raise HTTPException(status_code=400,detail="Insufficient stock")
+    if item.count < stock.quantity: 
+        raise HTTPException(status_code=400,detail="Insufficient stock")
 
     item.count -= stock.quantity
 
@@ -55,6 +52,7 @@ def remove_stock(item_id: int, stock: StockRemove, db: Session = Depends(get_db)
         item_id=item.id,
         quantity=-stock.quantity,
         transaction_type=TransactionType.DAMAGE,
+        employee_id = stock.employee_id,
         notes=stock.notes
     )
 
@@ -62,62 +60,64 @@ def remove_stock(item_id: int, stock: StockRemove, db: Session = Depends(get_db)
 
     db.commit()
 
-    return {
-        "message": "Stock removed successfully"
-    }
+    db.refresh(transaction)
+    
+    return transaction
 
 # Required item stock adjustment IF NEEDED ONLY
-@router.post("/items/{item_id}/adjust")
-def adjust_stock(item_id: int, adjustment: StockAdjustment, db: Session = Depends(get_db)):
-    item = (db.query(Item).filter(Item.id == item_id).first())
+@router.post("/items/{item_id}/adjust", response_model=StockTransactionResponse)
+def adjust_stock(item_id: int, stock: StockAdjustmentRequest, db: Session = Depends(get_db)):
+    item = db.query(Item).filter(Item.id == item_id).first()
+    if not item:
+        raise HTTPException(status_code=404, detail="Item not found")
 
-    if not item: raise HTTPException(status_code=404, detail="Item not found")
+    if stock.new_quantity < 0:
+        raise HTTPException(status_code=400, detail="Quantity cannot be negative")
 
-    difference = adjustment.new_count - item.count
+    if stock.new_quantity == item.count:
+        raise HTTPException(status_code=400, detail="No adjustment needed, quantity is already the same")
 
-    if difference == 0:
-        raise HTTPException(status_code=400, detail="No adjustment needed")
-
-    item.count = adjustment.new_count
+    difference = stock.new_quantity - item.count  
+    item.count = stock.new_quantity               
 
     transaction = Transaction(
         item_id=item.id,
-        quantity=difference,
+        quantity=difference,       
         transaction_type=TransactionType.ADJUSTMENT,
-        notes=adjustment.notes
+        employee_id=stock.employee_id,
+        notes=stock.notes
     )
 
     db.add(transaction)
-
     db.commit()
-    db.refresh(item)
+    db.refresh(transaction)
 
-    return {
-        "message": "Stock adjusted successfully",
-        "previous_count": adjustment.new_count - difference,
-        "new_count": item.count,
-        "difference": difference
-    }
+    return transaction
     
 # get all item's transaction history    
-@router.get("/items/{item_id}/history")
+@router.get("/items/{item_id}/history", response_model=list[StockTransactionHistory])
 def get_item_history(item_id: int, db: Session = Depends(get_db)):
     item = db.query(Item).filter(Item.id == item_id).first()
-
     if not item:
         raise HTTPException(status_code=404, detail="Item not found")
 
     return (
-        db.query(Transaction).filter(Transaction.item_id == item_id).order_by(Transaction.created_at.desc()).all()
+        db.query(Transaction)
+        .options(joinedload(Transaction.employee))  # avoid N+1
+        .filter(Transaction.item_id == item_id)
+        .order_by(Transaction.created_at.desc())
+        .all()
     )
 
 # get all transactions of all items
-@router.get("/")
-def get_transactions(
-    db: Session = Depends(get_db)
-):
+@router.get("/", response_model=list[StockTransactionResponse])
+def get_transactions(db: Session = Depends(get_db)):
     return (
         db.query(Transaction)
+        .options(
+            joinedload(Transaction.item),
+            joinedload(Transaction.employee)
+        )
         .order_by(Transaction.created_at.desc())
         .all()
     )

@@ -45,7 +45,7 @@ const handleSubmit = async (locationData) => {
 };
 
 const handleCancel = () => {
-  router.push("/locations");
+  router.back();
 };
 </script>
 

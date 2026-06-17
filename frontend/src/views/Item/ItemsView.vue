@@ -15,9 +15,12 @@ const editItem = (id) => {
   router.push(`/items/${id}/edit`);
 };
 
-const assignItem = (id) => {
-  router.push(`/assignments/create`);
-};
+const assignItem = (itemId) => {
+  router.push({ 
+    name: 'assignment-create', 
+    query: { item_id: itemId }  
+  })
+}
 
 const prefetchItemCreate = () => {
   import("./ItemCreateView.vue");
@@ -84,6 +87,7 @@ const deleteItemHandler = async (id) => {
           <div class="dash-cell">Nama Barang</div>
           <div class="dash-cell">Kategori</div>
           <div class="dash-cell">Jumlah</div>
+          <div class="dash-cell">Aksi</div>
         </div>
 
         <div
@@ -186,10 +190,10 @@ const deleteItemHandler = async (id) => {
 .dash-table-row {
     display: grid;
     grid-template-columns:
-        2fr
-        2fr
-        1fr
-        1fr;
+        1.5fr
+        1.5fr
+        1.5fr
+        1.5fr;
     gap: 16px;
     padding: 12px 20px;
     align-items: center;
@@ -197,4 +201,10 @@ const deleteItemHandler = async (id) => {
     font-size: 13px;
 }
 
+.dash-table-row .dash-cell:not(:first-child) {
+  text-align: center;
+  justify-content: center;
+  display: flex;
+  align-items: center;
+}
 </style>

@@ -72,8 +72,8 @@ def delete_location(location_id: int, db: Session = Depends(get_db)):
     if not location:
         raise HTTPException(status_code=404, detail="Location not found")
         
-    if location.items:
-        raise HTTPException(status_code=400, detail="Cannot delete location with assigned items")
+    # if location.items:
+    #     raise HTTPException(status_code=400, detail="Cannot delete location with assigned items")
     
     db.delete(location)
     db.commit()    

@@ -476,7 +476,7 @@ img {
 
 .dash-table-row {
     display: grid;
-    grid-template-columns: 1.5fr 1.5fr 1.5fr 0.5fr 100px;
+    grid-template-columns: 1.5fr 1.5fr 1.5fr 1fr 100px;
     padding: 12px 20px;
     align-items: center;
     border-bottom: 1px solid var(--border-light);

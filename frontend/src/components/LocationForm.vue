@@ -7,7 +7,7 @@ const props = defineProps({
     default: () => ({
       city: "",
       location_name: "",
-      decription: "",
+      description: "",
     }),
   },
 
@@ -30,7 +30,7 @@ const emit = defineEmits([
 const form = ref({
   city: "",
   location_name: "",
-  decription: "",
+  description: "",
 });
 
 watch(
@@ -75,7 +75,7 @@ const submitForm = () => {
         <label>Deskripsi</label>
 
         <input
-          v-model="form.decription"
+          v-model="form.description"
           type="text"
         />
       </div>

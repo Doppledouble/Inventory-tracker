@@ -23,7 +23,7 @@ const handleSubmit = async (itemData) => {
 };
 
 const handleCancel = () => {
-  router.push("/items");
+  router.back();
 };
 </script>
 
