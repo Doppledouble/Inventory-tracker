@@ -492,6 +492,13 @@ img {
     background: rgba(0,0,0,0.015);
 }
 
+.dash-table-row .dash-cell:not(:first-child) {
+  text-align: center;
+  justify-content: center;
+  display: flex;
+  align-items: center;
+}
+
 .dash-table-row:last-child {
     border-bottom: none;
 }
@@ -1395,4 +1402,41 @@ img {
 
 .create-page {
   padding: 24px;
+}
+
+.sortable {
+  cursor: pointer;
+  user-select: none;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  white-space: nowrap;
+}
+
+.sortable:hover { color: #000000; text-decoration: underline;}
+.sortable i { font-size: 13px; opacity: 0.5; }
+
+.filter-row {
+  background: var(--color-background-secondary);
+  padding: 8px 20px;
+}
+
+.filter-row .dash-cell {
+  display: flex;
+  justify-content: center;
+}
+
+.filter-row .dash-cell:first-child {
+  justify-content: flex-start;
+}
+
+.filter-row input,
+.filter-row select {
+  width: 100%;
+  padding: 6px 10px;
+  font-size: 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--color-background-primary);
+  color: var(--color-text-primary);
 }

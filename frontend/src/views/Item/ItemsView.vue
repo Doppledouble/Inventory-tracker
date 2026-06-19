@@ -2,6 +2,7 @@
 import { ref, onMounted } from "vue";
 import { getItems,deleteItem } from "../../services/itemService.js";
 import { createAssignment } from "../../services/assignmentService.js"
+import { useTableControls } from "../../composables/useTableControls.js";
 import { useRouter } from "vue-router";
 
 const router = useRouter();
@@ -25,6 +26,16 @@ const assignItem = (itemId) => {
 const prefetchItemCreate = () => {
   import("./ItemCreateView.vue");
 };
+
+const { filters, result, toggleSort, getSortIcon } = useTableControls(
+  items, 
+  [ 
+    { key: "name", type: "text", resolve: (t) => t.name },
+    { key: "category", type: "text", resolve: (t) => t.category },
+    { key: "count", type: "number", resolve: (t) => t.count },
+  ],
+  "created_at" // default sort key
+);
 
 const loadItems = async () => {
   try {
@@ -84,14 +95,33 @@ const deleteItemHandler = async (id) => {
       
       <div class="dash-table">
         <div class="dash-table-row head">
-          <div class="dash-cell">Nama Barang</div>
-          <div class="dash-cell">Kategori</div>
-          <div class="dash-cell">Jumlah</div>
+          <div class="dash-cell sortable" @click="toggleSort('name')">
+            Nama <i :class="['ti', getSortIcon('name')]" aria-hidden="true" />
+          </div>
+          <div class="dash-cell sortable" @click="toggleSort('category')">
+            Kategory <i :class="['ti', getSortIcon('category')]" aria-hidden="true" />
+          </div>
+          <div class="dash-cell sortable" @click="toggleSort('count')">
+            Jumlah <i :class="['ti', getSortIcon('count')]" aria-hidden="true" />
+          </div>
           <div class="dash-cell">Aksi</div>
         </div>
 
+        <!-- FILTER ROW -->
+        <div class="dash-table-row filter-row">
+          <div class="dash-cell">
+            <input v-model="filters.name" placeholder="Cari barang..." />
+          </div>
+          <div class="dash-cell">
+            <input v-model="filters.category" placeholder="Cari kategori..." />
+          </div>
+          <div class="dash-cell">
+            <input v-model="filters.count" placeholder="Cari jumlah..." type="number"/>
+          </div>
+        </div>
+
         <div
-          v-for="item in items"
+          v-for="item in result"
           :key="item.id"
           class="dash-table-row"
         >

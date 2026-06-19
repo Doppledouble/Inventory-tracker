@@ -1,6 +1,7 @@
 <script setup>
 import { ref, onMounted } from "vue";
 import { getLocations,deleteLocation } from "../../services/locationService.js";
+import { useTableControls } from "../../composables/useTableControls.js";
 import { useRouter } from "vue-router";
 
 const router = useRouter();
@@ -17,6 +18,16 @@ const editLocation = (id) => {
 const prefetchLocationCreate = () => {
   import("./LocationCreateView.vue");
 };
+
+const { filters, result, toggleSort, getSortIcon } = useTableControls(
+  locations, 
+  [ 
+    { key: "location_name", type: "text", resolve: (t) => t.location_name },
+    { key: "city", type: "text", resolve: (t) => t.city },
+    { key: "description", type: "text", resolve: (t) => t.description },
+  ],
+  "created_at" // default sort key
+);
 
 const loadLocations = async () => {
   try {
@@ -76,14 +87,34 @@ const deleteLocationHandler = async (id) => {
       
       <div class="dash-table">
         <div class="dash-table-row head">
-          <div class="dash-cell">Nama Lokasi</div>
-          <div class="dash-cell">Kota</div>
-          <div class="dash-cell">Deskripsi</div>
-          <div class="dash-cell">Aksi</div>
+          <div class="dash-cell sortable" @click="toggleSort('location_name')">
+            Nama Lokasi <i :class="['ti', getSortIcon('location_name')]" aria-hidden="true" />
+          </div>
+          <div class="dash-cell sortable" @click="toggleSort('city')">
+            Kota <i :class="['ti', getSortIcon('city')]" aria-hidden="true" />
+          </div>
+          <div class="dash-cell sortable" @click="toggleSort('description')">
+            Deskripsi <i :class="['ti', getSortIcon('description')]" aria-hidden="true" />
+          </div>
+          <div class="dash-cell ">Aksi</div>
         </div>
 
+        <!-- FILTER ROW -->
+        <div class="dash-table-row filter-row">
+          <div class="dash-cell">
+            <input v-model="filters.location_name" placeholder="Cari lokasi..." />
+          </div>
+          <div class="dash-cell">
+            <input v-model="filters.city" placeholder="Cari kota..." />
+          </div>
+          <div class="dash-cell">
+            <input v-model="filters.description" placeholder="Cari ..." />
+          </div>
+        </div>
+
+        <!-- DATA ROW-->
         <div
-          v-for="location in locations"
+          v-for="location in result"
           :key="location.id"
           class="dash-table-row"
         >
@@ -135,6 +166,10 @@ const deleteLocationHandler = async (id) => {
   padding-top: 20px;
 }
 
+.dash-table-row {
+  gap: 16px;
+}
+
 .action-buttons {
   display: flex;
   gap: 8px;
@@ -172,10 +207,5 @@ const deleteLocationHandler = async (id) => {
   font-weight: 700;
 }
 
-.dash-table-row .dash-cell:not(:first-child) {
-  text-align: center;
-  justify-content: center;
-  display: flex;
-  align-items: center;
-}
+
 </style>

@@ -1,6 +1,7 @@
 <script setup>
 import { ref, onMounted } from "vue";
 import { getEmployees,deleteEmployee } from "../../services/employeeService.js";
+import { useTableControls } from "../../composables/useTableControls.js";
 import { useRouter } from "vue-router";
 
 const router = useRouter();
@@ -17,6 +18,16 @@ const editEmployee = (id) => {
 const prefetchEmployeeCreate = () => {
   import("./EmployeeCreateView.vue");
 };
+
+const { filters, result, toggleSort, getSortIcon } = useTableControls(
+  employees, 
+  [ 
+    { key: "first_name", type: "text", resolve: (t) => t.first_name },
+    { key: "last_name", type: "text", resolve: (t) => t.last_name },
+    { key: "email", type: "text", resolve: (t) => t.email },
+  ],
+  "created_at" // default sort key
+);
 
 const loadEmployees = async () => {
   try {
@@ -60,7 +71,7 @@ const deleteEmployeeHandler = async (id) => {
       </h1>
     </div>
     
-    <!-- SECTION 1 : DASHBOARD -->
+    <!-- SECTION  DASHBOARD -->
     <div class="card dashboard-table-area">
       <div class="dash-table-header">
         <span>Total Karyawan: {{ employees.length }}</span>
@@ -76,14 +87,34 @@ const deleteEmployeeHandler = async (id) => {
       
       <div class="dash-table">
         <div class="dash-table-row head">
-          <div class="dash-cell">Nama Depan</div>
-          <div class="dash-cell">Nama Belakang</div>
-          <div class="dash-cell">E-mail</div>
+          <div class="dash-cell sortable" @click="toggleSort('first_name')">
+            Nama Depan <i :class="['ti', getSortIcon('first_name')]" aria-hidden="true" />
+          </div>
+          <div class="dash-cell sortable" @click="toggleSort('last_name')">
+            Nama Belakang <i :class="['ti', getSortIcon('last_name')]" aria-hidden="true" />
+          </div>
+          <div class="dash-cell sortable" @click="toggleSort('email')">
+            E-Mail <i :class="['ti', getSortIcon('email')]" aria-hidden="true" />
+          </div>
           <div class="dash-cell">Aksi</div>
         </div>
 
+        <!-- FILTER ROW -->
+        <div class="dash-table-row filter-row">
+          <div class="dash-cell">
+            <input v-model="filters.first_name" placeholder="Cari nama depan..." />
+          </div>
+          <div class="dash-cell">
+            <input v-model="filters.last_name" placeholder="Cari nama belakang..." />
+          </div>
+          <div class="dash-cell">
+            <input v-model="filters.email" placeholder="Cari email..." />
+          </div>
+        </div>
+
+
         <div
-          v-for="employee in employees"
+          v-for="employee in result"
           :key="employee.id"
           class="dash-table-row"
         >
@@ -138,6 +169,10 @@ const deleteEmployeeHandler = async (id) => {
 .action-buttons {
   display: flex;
   gap: 8px;
+}
+
+.dash-table-row{
+  gap: 16px;
 }
 
 .btn-small {

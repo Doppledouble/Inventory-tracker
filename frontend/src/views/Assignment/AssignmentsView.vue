@@ -1,6 +1,7 @@
 <script setup>
 import { ref, onMounted } from "vue";
 import { getActiveAssignments,returnAssignment } from "../../services/assignmentService.js";
+import { useTableControls } from "../../composables/useTableControls.js";
 import { useRouter } from "vue-router";
 
 const router = useRouter();
@@ -13,6 +14,19 @@ const addAssignment = () =>{
 const editAssignment = (id) => {
   router.push(`/assignments/${id}/edit`);
 };
+
+const { filters, result, toggleSort, getSortIcon } = useTableControls(
+  // this is the whole transaction data
+  assignments, 
+  [ // Keys for sorting that are received from each table column header
+    { key: "item", type: "text", resolve: (t) => t.item?.name },
+    { key: "employee", type: "text", resolve: (t) => `${t.employee?.first_name ?? ""} ${t.employee?.last_name ?? ""}` },
+    { key: "quantity", type: "number", resolve: (t) => t.quantity },
+    { key: "location", type: "text", resolve: (t) => t.location?.location_name },
+    { key: "assigned_at", type: "date", resolve: (t) => new Date(t.assigned_at) },
+  ],
+  "assigned_at" // default sort key
+);
 
 const loadAssignments = async () => {
   try {
@@ -54,7 +68,7 @@ const returnAssignmentHandler = async (id) => {
       </h1>
     </div>
     
-    <!-- SECTION 1 : DASHBOARD -->
+    <!-- SECTION  DASHBOARD -->
     <div class="card dashboard-table-area">
       <div class="dash-table-header">
         <span>Total Barang: {{ assignments.length }}</span>
@@ -69,16 +83,46 @@ const returnAssignmentHandler = async (id) => {
       
       <div class="dash-table">
         <div class="dash-table-row head">
-          <div class="dash-cell">Nama Barang</div>
-          <div class="dash-cell">Nama PIC</div>
-          <div class="dash-cell">Jumlah</div>
-          <div class="dash-cell">Lokasi</div>
-          <div class="dash-cell">Tanggal Dipakai</div>
+          <div class="dash-cell sortable" @click="toggleSort('item')">
+            Nama Barang <i :class="['ti', getSortIcon('item')]" aria-hidden="true" />
+          </div>
+          <div class="dash-cell sortable" @click="toggleSort('employee')">
+            PIC <i :class="['ti', getSortIcon('employee')]" aria-hidden="true" />
+          </div>
+          <div class="dash-cell sortable" @click="toggleSort('quantity')">
+            Jumlah <i :class="['ti', getSortIcon('quantity')]" aria-hidden="true" />
+          </div>
+          <div class="dash-cell sortable" @click="toggleSort('location')">
+            Lokasi <i :class="['ti', getSortIcon('location')]" aria-hidden="true" />
+          </div>
+          <div class="dash-cell sortable" @click="toggleSort('assigned_at')">
+            Tanggal Dipakai <i :class="['ti', getSortIcon('assigned_at')]" aria-hidden="true" />
+          </div>
           <div class="dash-cell">Aksi</div>
         </div>
 
+        <!-- FILTER ROW -->
+        <div class="dash-table-row filter-row">
+          <div class="dash-cell">
+            <input v-model="filters.item" placeholder="Cari barang..." />
+          </div>
+          <div class="dash-cell">
+            <input v-model="filters.employee" placeholder="Cari PIC..." />
+          </div>
+          <div class="dash-cell">
+            <input v-model="filters.count" placeholder="Cari jumlah..." type="number"/>
+          </div>
+          <div class="dash-cell">
+            <input v-model="filters.location" placeholder="Cari lokasi..." />
+          </div>
+          <div class="dash-cell">
+            <input v-model="filters.assigned_at" placeholder="Cari tanggal..." />
+          </div>
+        </div>
+
+
         <div
-          v-for="assignment in assignments"
+          v-for="assignment in result"
           :key="assignment.id"
           class="dash-table-row"
         >
