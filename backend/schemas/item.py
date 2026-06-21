@@ -15,7 +15,7 @@ class ItemCreate(ItemBase):
 class ItemUpdate(BaseModel):
     name        : Optional[str] = None
     category    : Optional[str] = None
-    count       : Optional[int] = Field(default=0, gt=0)
+    count       : Optional[int] = Field(default=0, ge=0)
     
     
 class ItemResponse(ItemBase):

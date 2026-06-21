@@ -1,4 +1,5 @@
 from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Enum
+from pydantic import Field
 from sqlalchemy.sql import func
 from sqlalchemy.orm import relationship
 
@@ -13,7 +14,8 @@ class Item(Base):
     name = Column(String, nullable=False)
     category = Column(String)
     count = Column(Integer, nullable=False)
-    
+    # is_deleted = Field(default=False, description="Flag for soft delete")
+    # unit = Column(String, nullable=False)
     
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())

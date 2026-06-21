@@ -54,6 +54,11 @@ const router = createRouter({
           name: 'item-create',
           component: () => import('../views/Item/ItemCreateView.vue')
         },
+        {
+          path: 'items/:id/edit',
+          name: 'item-edit',
+          component: () => import('../views/Item/ItemEditView.vue')
+        },
 
         // ASSIGNMENT ROUTES
         {

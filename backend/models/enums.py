@@ -2,8 +2,8 @@ from enum import Enum
 
 
 class TransactionType(str, Enum):
-    PURCHASE = "purchase"
+    ADD = "add"
     ASSIGNMENT = "assignment"
     RETURN = "return"
-    DAMAGE = "damage"
+    REMOVE = "remove"
     ADJUSTMENT = "adjustment"

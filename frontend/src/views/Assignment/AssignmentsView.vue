@@ -71,7 +71,7 @@ const returnAssignmentHandler = async (id) => {
     <!-- SECTION  DASHBOARD -->
     <div class="card dashboard-table-area">
       <div class="dash-table-header">
-        <span>Total Barang: {{ assignments.length }}</span>
+        <span>Total Pemakaian: {{ assignments.length }}</span>
 
         <button
           class="btn-acid"

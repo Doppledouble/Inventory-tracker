@@ -7,8 +7,8 @@ const transactions = ref([]);
 
 // for type of action in each transaction
 const typeLabel = {
-  purchase: "Pembelian",
-  damage: "Kerusakan",
+  add: "Penambahan",
+  remove: "Pengurangan",
   adjustment: "Penyesuaian",
   return: "Pengembalian",
   assignment: "Pemakaian",
@@ -96,8 +96,8 @@ onMounted(loadTransactions);
           <div class="dash-cell">
             <select v-model="filters.type">
               <option value="">Semua</option>
-              <option value="purchase">Pembelian</option>
-              <option value="damage">Kerusakan</option>
+              <option value="add">Penambahan</option>
+              <option value="remove">Pengurangan</option>
               <option value="adjustment">Penyesuaian</option>
               <option value="return">Pengembalian</option>
               <option value="assignment">Pemakaian</option>
@@ -199,8 +199,8 @@ onMounted(loadTransactions);
   font-weight: 600;
 }
 
-.type-badge.purchase   { background: #E1F5EE; color: #0F6E56; }
-.type-badge.damage     { background: #FEE2E2; color: #991B1B; }
+.type-badge.add   { background: #E1F5EE; color: #0F6E56; }
+.type-badge.remove     { background: #FEE2E2; color: #991B1B; }
 .type-badge.return     { background: #f2ffee; color: #0da904; }
 .type-badge.assignment { background: #ffffee; color: #c35303; }
 .type-badge.adjustment { background: #EEF2FF; color: #3730A3; }
