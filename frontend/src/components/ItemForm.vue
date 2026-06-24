@@ -10,7 +10,9 @@ const props = defineProps({
     default: () => ({
       name: "",
       category: "",
+      type: "",
       count: 1,
+      unit: "",
     }),
   },
 
@@ -35,7 +37,9 @@ const emit = defineEmits([
 const form = ref({
     name: "",
     category: "",
+    type: "",
     count: 1,
+    unit: "",
 });
 
 watch(
@@ -76,11 +80,29 @@ const submitForm = () => {
       </div>
 
       <div class="form-group">
+        <label>Tipe Barang</label>
+        <select v-model="form.type">
+          <option value="" disabled>Pilih tipe barang</option>
+          <option value="material">Material</option>
+          <option value="tool">Tool</option>
+        </select>
+      </div>      
+
+      <div class="form-group">
         <label>Jumlah</label>
 
         <input
           v-model.number="form.count"
           type="number"
+        />
+      </div>
+
+      <div class="form-group">
+        <label>Unit/Satuan</label>
+
+        <input
+          v-model.number="form.unit"
+          type="text"
         />
       </div>
 

@@ -15,9 +15,11 @@ console.log("itemId:", itemId);
 const loading = ref(false);
 
 const item = ref({
-  name: "",
+  name    : "",
   category: "",
-  count: 0,
+  type    : "",
+  count   : 0,
+  unit    : "",
 });
 
 onMounted(async () => {

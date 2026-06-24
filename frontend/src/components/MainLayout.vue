@@ -17,10 +17,6 @@
           Employees
         </RouterLink>
 
-        <RouterLink to="/locations">
-          Locations
-        </RouterLink>
-
         <RouterLink to="/items">
           Assets
         </RouterLink>

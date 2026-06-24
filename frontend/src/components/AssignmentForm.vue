@@ -10,7 +10,7 @@ const props = defineProps({
     default: () => ({
       item_id:"",
       employee_id: "",
-      location_id: "",
+      location: "",
       quantity: 0,
     }),
   },
@@ -30,13 +30,11 @@ const emit = defineEmits(["submit", "cancel"]);
 
 const items = ref([])
 const employees = ref([])
-const locations = ref([])
 
 onMounted(async () => {
   try {
     const requests = [
       api.get("/employees"),
-      api.get("/locations"),
     ]
 
     // Only fetch all items if not pre-filled
@@ -47,7 +45,7 @@ onMounted(async () => {
       requests.unshift(api.get(`/items/${props.initialData.item_id}`))
     }
 
-    const [itemsRes, employeesRes, locationsRes] = await Promise.all(requests)
+    const [itemsRes, employeesRes] = await Promise.all(requests)
 
     // If locked, wrap single item in array so the watch still works
     items.value = props.initialData?.item_id 
@@ -64,7 +62,7 @@ onMounted(async () => {
 const form = ref({
   item_id: null,
   employee_id: null,
-  location_id: null,
+  location: null,
   quantity: 1,
   notes: "",
 });
@@ -72,7 +70,6 @@ const form = ref({
 // Selected option objects for the multiselects (vue-multiselect needs objects)
 const selectedItem = ref(null)
 const selectedEmployee = ref(null)
-const selectedLocation = ref(null)
 
 watch(
   () => props.initialData,
@@ -91,10 +88,6 @@ watch([employees, () => form.value.employee_id], ([empList, empId]) => {
   selectedEmployee.value = empList.find(e => e.id === empId) || null
 })
 
-watch([locations, () => form.value.location_id], ([locList, locId]) => {
-  selectedLocation.value = locList.find(l => l.id === locId) || null
-})
-
 // When user picks a new option, update form's *_id with the id
 const onItemSelect = (option) => {
   form.value.item_id = option ? option.id : null
@@ -102,10 +95,6 @@ const onItemSelect = (option) => {
 
 const onEmployeeSelect = (option) => {
   form.value.employee_id = option ? option.id : null
-}
-
-const onLocationSelect = (option) => {
-  form.value.location_id = option ? option.id : null
 }
 
 const isItemLocked = computed(() => !!props.initialData?.item_id)
@@ -152,13 +141,9 @@ const submitForm = () => {
 
       <div class="form-group">
         <label>Lokasi</label>
-        <Multiselect
-          v-model="selectedLocation"
-          :options="locations"
-          label="location_name"
-          track-by="id"
-          placeholder="Pilih lokasi"
-          @update:model-value="onLocationSelect"
+        <input
+          v-model="form.location"
+          type="text"
         />
       </div>
 

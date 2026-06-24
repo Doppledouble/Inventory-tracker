@@ -26,23 +26,6 @@ const router = createRouter({
           component: () => import('../views/Employee/EmployeeEditView.vue')
         },
 
-        // LOCATION ROUTES
-        {
-          path: 'locations',
-          name: 'locations',
-          component: () => import('../views/Location/LocationsView.vue')
-        },
-        {
-          path: 'locations/create',
-          name: 'location-create',
-          component: () => import('../views/Location/LocationCreateView.vue')
-        },
-        {
-          path: 'locations/:id/edit',
-          name: 'location-edit',
-          component: () => import('../views/Location/LocationEditView.vue')
-        },
-
         // ITEM ROUTES
         {
           path: 'items',

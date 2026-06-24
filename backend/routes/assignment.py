@@ -7,7 +7,6 @@ from models.assignment import Assignment
 from models.item import Item
 from models.employee import Employee
 from models.transaction import Transaction
-from models.location import Location
 from models.enums import TransactionType
 from schemas.assignment import AssignmentCreate, AssignmentUpdate, AssignmentResponse
 
@@ -26,11 +25,6 @@ def create_assignment(assignment: AssignmentCreate, db: Session = Depends(get_db
     if not employee:
         raise HTTPException(status_code=404, detail="Employee not found")
     
-    # validate location exists
-    location = (db.query(Location).filter(Location.id == assignment.location_id).first())
-    if not location:
-        raise HTTPException(status_code=404, detail="Location not found")
-    
     if item.count < assignment.quantity:
         raise HTTPException(status_code=400, detail="Insufficient stock")    
     
@@ -39,7 +33,7 @@ def create_assignment(assignment: AssignmentCreate, db: Session = Depends(get_db
     new_assignment = Assignment(
         item_id=assignment.item_id,
         employee_id=assignment.employee_id,
-        location_id=assignment.location_id,
+        location=assignment.location,
         quantity=assignment.quantity,
         notes=assignment.notes
     )
@@ -66,8 +60,7 @@ def create_assignment(assignment: AssignmentCreate, db: Session = Depends(get_db
 def get_assignments(active: bool | None = Query(None, description="Filter by active status"), db: Session = Depends(get_db)):
     query = db.query(Assignment).options(
         joinedload(Assignment.item),
-        joinedload(Assignment.employee),
-        joinedload(Assignment.location)
+        joinedload(Assignment.employee)
     )
     if active is not None:
         query = query.filter(Assignment.returned_at.is_(None) if active else Assignment.returned_at.isnot(None))

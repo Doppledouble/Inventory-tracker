@@ -6,7 +6,7 @@ from typing import Optional
 class AssignmentBase(BaseModel):
     item_id: int
     employee_id: int
-    location_id: int
+    location: str
     quantity: int
     notes: str | None = None
 
@@ -36,14 +36,6 @@ class EmployeeBasic(BaseModel):
     class Config:
         from_attributes = True
         
-        
-class LocationBasic(BaseModel):
-    id: int
-    location_name: str
-    
-    class Config:
-        from_attributes = True
-
 
 class AssignmentResponse(BaseModel):
     id: int
@@ -53,7 +45,7 @@ class AssignmentResponse(BaseModel):
 
     item: ItemBasic       # { id, name }
     employee: EmployeeBasic  # { id, first_name, last_name }
-    location: LocationBasic  # { id, name }
+    location: str  
 
     class Config:
         from_attributes = True

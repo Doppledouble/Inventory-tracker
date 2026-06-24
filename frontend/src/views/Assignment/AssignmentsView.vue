@@ -22,7 +22,7 @@ const { filters, result, toggleSort, getSortIcon } = useTableControls(
     { key: "item", type: "text", resolve: (t) => t.item?.name },
     { key: "employee", type: "text", resolve: (t) => `${t.employee?.first_name ?? ""} ${t.employee?.last_name ?? ""}` },
     { key: "quantity", type: "number", resolve: (t) => t.quantity },
-    { key: "location", type: "text", resolve: (t) => t.location?.location_name },
+    { key: "location", type: "text", resolve: (t) => t.location },
     { key: "assigned_at", type: "date", resolve: (t) => new Date(t.assigned_at) },
   ],
   "assigned_at" // default sort key
@@ -142,7 +142,7 @@ const returnAssignmentHandler = async (id) => {
           </div>
 
           <div class="dash-cell">
-            {{ assignment.location?.location_name }}
+            {{ assignment.location }}
           </div>
 
           <div class="dash-cell">

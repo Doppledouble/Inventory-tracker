@@ -10,7 +10,7 @@ const route  = useRoute();
 const initialData = {
   item_id: route.query.item_id ? parseInt(route.query.item_id) : null,
   employee_id: null,
-  location_id: null,
+  location: null,
   quantity: 1,
   notes: ""
 }

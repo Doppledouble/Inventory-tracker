@@ -33,6 +33,7 @@ const { filters, result, toggleSort, getSortIcon } = useTableControls(
     { key: "name", type: "text", resolve: (t) => t.name },
     { key: "category", type: "text", resolve: (t) => t.category },
     { key: "count", type: "number", resolve: (t) => t.count },
+    { key: "unit", type: "text", resolve: (t) => t.unit },
   ],
   "created_at" // default sort key
 );
@@ -104,6 +105,9 @@ const deleteItemHandler = async (id) => {
           <div class="dash-cell sortable" @click="toggleSort('count')">
             Jumlah <i :class="['ti', getSortIcon('count')]" aria-hidden="true" />
           </div>
+          <div class="dash-cell sortable" @click="toggleSort('unit')">
+            Unit <i :class="['ti', getSortIcon('unit')]" aria-hidden="true" />
+          </div>
           <div class="dash-cell">Aksi</div>
         </div>
 
@@ -118,6 +122,9 @@ const deleteItemHandler = async (id) => {
           <div class="dash-cell">
             <input v-model="filters.count" placeholder="Cari jumlah..." type="number"/>
           </div>
+          <div class="dash-cell">
+            <input v-model="filters.unit" placeholder="Cari satuan..."/>
+          </div>          
         </div>
 
         <div
@@ -138,6 +145,10 @@ const deleteItemHandler = async (id) => {
 
           <div class="dash-cell">
             {{ item.count }}
+          </div>
+
+          <div class="dash-cell">
+            {{ item.unit }}
           </div>
 
           <div class="dash-cell action-buttons">
@@ -220,10 +231,11 @@ const deleteItemHandler = async (id) => {
 .dash-table-row {
     display: grid;
     grid-template-columns:
-        1.5fr
-        1.5fr
-        1.5fr
-        1.5fr;
+        1fr
+        1fr
+        1fr
+        1fr
+        1fr;
     gap: 16px;
     padding: 12px 20px;
     align-items: center;

@@ -16,7 +16,9 @@ def create_item(item: ItemCreate, db: Session = Depends(get_db)):
     new_item = Item(
         name=item.name,
         category=item.category,
-        count=item.count
+        type=item.type,
+        count=item.count,
+        unit=item.unit
     )
     # Insert the new_item first to create the id in the database
     db.add(new_item)

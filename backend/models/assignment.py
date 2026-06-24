@@ -8,11 +8,11 @@ from database import Base
 class Assignment(Base):
     __tablename__ = "assignments"
 
-    id = Column(Integer, primary_key=True, index=True)
+    id          = Column(Integer, primary_key=True, index=True)
 
-    item_id = Column(Integer, ForeignKey("items.id"), nullable=False)
+    item_id     = Column(Integer, ForeignKey("items.id"), nullable=False)
     employee_id = Column(Integer, ForeignKey("employees.id"), nullable=False)
-    location_id = Column(Integer, ForeignKey("locations.id"), nullable=False)
+    location    = Column(String, nullable=False)
     
     quantity = Column(Integer, nullable=False, default=1)
     
@@ -22,17 +22,5 @@ class Assignment(Base):
     notes = Column(String, nullable=True)
 
     # relationships
-    item = relationship(
-        "Item",
-        back_populates="assignments"
-    )
-
-    employee = relationship(
-        "Employee",
-        back_populates="assignments"
-    )
-    
-    location = relationship(
-        "Location",
-        back_populates="assignments"
-    )
+    item        = relationship("Item", back_populates="assignments")
+    employee    = relationship("Employee", back_populates="assignments")
