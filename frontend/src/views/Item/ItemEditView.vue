@@ -65,6 +65,7 @@ const handleCancel = () => {
 
     <ItemForm
       :initial-data="item"
+      :is-edit="true"
       :loading="loading"
       submit-label="Update Barang"
       @submit="handleSubmit"

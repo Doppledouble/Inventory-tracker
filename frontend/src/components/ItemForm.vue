@@ -1,8 +1,5 @@
 <script setup>
-import { ref, watch, onMounted } from "vue";
-import api from "../services/api.js";
-import Multiselect from "vue-multiselect"
-import "vue-multiselect/dist/vue-multiselect.css"
+import { ref, watch } from "vue";  // ← removed unused onMounted
 
 const props = defineProps({
   initialData: {
@@ -13,7 +10,13 @@ const props = defineProps({
       type: "",
       count: 1,
       unit: "",
+      inventory_date: null,
     }),
+  },
+
+  isEdit: {
+    type: Boolean,
+    default: false,  // ← added
   },
 
   submitLabel: {
@@ -26,20 +29,16 @@ const props = defineProps({
     default: false,
   },
 });
-    
-const locations = ref([])
 
-const emit = defineEmits([
-  "submit",
-  "cancel"
-]);
+const emit = defineEmits(["submit"]);  // ← removed unused "cancel"
 
 const form = ref({
-    name: "",
-    category: "",
-    type: "",
-    count: 1,
-    unit: "",
+  name: "",
+  category: "",
+  type: "",
+  count: 1,
+  unit: "",
+  inventory_date: null,
 });
 
 watch(
@@ -51,8 +50,17 @@ watch(
 );
 
 const submitForm = () => {
-  emit("submit", 
-  { ...form.value });
+  const payload = { ...form.value }
+
+  if (props.isEdit) {
+    delete payload.inventory_date  // ← don't send on edit
+  }
+
+  if (!payload.inventory_date) {
+    payload.inventory_date = null  // ← send null so backend uses now()
+  }
+
+  emit("submit", payload);
 };
 </script>
 
@@ -62,68 +70,49 @@ const submitForm = () => {
 
       <div class="form-group">
         <label>Nama Barang</label>
-
-        <input
-          v-model="form.name"
-          type="text"
-          required
-        />
+        <input v-model="form.name" type="text" required />
       </div>
 
       <div class="form-group">
         <label>Kategori</label>
-
-        <input
-          v-model="form.category"
-          type="text"
-        />
+        <input v-model="form.category" type="text" />
       </div>
 
-      <div class="form-group">
+      <div class="form-group" v-if="!isEdit">
         <label>Tipe Barang</label>
         <select v-model="form.type">
           <option value="" disabled>Pilih tipe barang</option>
           <option value="material">Material</option>
           <option value="tool">Tool</option>
         </select>
-      </div>      
+      </div>
 
       <div class="form-group">
         <label>Jumlah</label>
-
-        <input
-          v-model.number="form.count"
-          type="number"
-        />
+        <input v-model.number="form.count" type="number" min="0" required />
       </div>
 
       <div class="form-group">
         <label>Unit/Satuan</label>
+        <input v-model="form.unit" type="text" />  <!-- ← removed .number -->
+      </div>
 
-        <input
-          v-model.number="form.unit"
-          type="text"
-        />
+      <div class="form-group" v-if="!isEdit">
+        <label>Tanggal Ditambahkan ke Inventori</label>
+        <input v-model="form.inventory_date" type="datetime-local" />
+        <small style="color: var(--text-muted)">
+          Kosongkan jika hari ini
+        </small>
       </div>
 
       <div class="form-actions">
-
-        <button
-          type="button"
-          class="btn-ghost"
-          @click="$emit('cancel')"
-        >
+        <button type="button" class="btn-ghost" @click="$emit('cancel')">
           Batal
         </button>
 
-        <button
-          type="submit"
-          class="btn-acid"
-          :disabled="loading"
-        >
+        <button type="submit" class="btn-acid" :disabled="loading">
           {{ loading ? "Menyimpan..." : submitLabel }}
         </button>
-
       </div>
 
     </form>
@@ -155,18 +144,10 @@ const submitForm = () => {
   border-radius: 10px;
 }
 
-.form-checkbox {
-  display: flex;
-  gap: 10px;
-  align-items: center;
-}
-
 .form-actions {
   display: flex;
   justify-content: flex-end;
   gap: 12px;
   margin-top: 30px;
 }
-
-
 </style>

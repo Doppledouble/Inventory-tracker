@@ -3,6 +3,7 @@ import { ref, onMounted } from "vue";
 import { getActiveAssignments,returnAssignment } from "../../services/assignmentService.js";
 import { useTableControls } from "../../composables/useTableControls.js";
 import { useRouter } from "vue-router";
+import ActionDropdown from "../../components/ActionDropdown.vue";
 
 const router = useRouter();
 const assignments = ref([]);
@@ -53,6 +54,10 @@ const returnAssignmentHandler = async (id) => {
     console.error(error);
   }
 };
+
+const getAssignmentActions = (assignment) => [
+  { label: "Kembalikan", icon: "ti-trash", handler: () => returnAssignmentHandler(assignment.id), variant: "danger" },
+];
 </script>
 
 <template>
@@ -150,19 +155,7 @@ const returnAssignmentHandler = async (id) => {
           </div>
 
           <div class="dash-cell action-buttons">
-            <button
-              class="btn-ghost btn-small"
-              @click="editAssignment(assignment.id)"
-            >
-              Edit
-            </button>
-
-            <button
-              class="btn-danger btn-small"
-              @click="returnAssignmentHandler(assignment.id)"
-            >
-              Kembalikan
-            </button>
+              <ActionDropdown :actions="getAssignmentActions(assignment)" />
           </div>
         </div>
 

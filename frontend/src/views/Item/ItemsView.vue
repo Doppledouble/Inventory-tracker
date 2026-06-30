@@ -1,11 +1,12 @@
 <script setup>
-import { ref, onMounted } from "vue";
-import { getItems,deleteItem } from "../../services/itemService.js";
-import { createAssignment } from "../../services/assignmentService.js"
+import { ref, onMounted, watch, computed } from "vue";
+import { useRoute, useRouter } from "vue-router";
+import { getItems, getTools, getMaterials, deleteItem } from "../../services/itemService.js";
 import { useTableControls } from "../../composables/useTableControls.js";
-import { useRouter } from "vue-router";
+import ActionDropdown from "../../components/ActionDropdown.vue";
 
 const router = useRouter();
+const route  = useRoute()
 const items = ref([]);
 
 const addItem = () => {
@@ -40,7 +41,16 @@ const { filters, result, toggleSort, getSortIcon } = useTableControls(
 
 const loadItems = async () => {
   try {
-    const response = await getItems();
+    let response;
+
+    if (route.path === "/items/tool") {
+      response = await getTools();
+    } else if (route.path === "/items/material") {
+      response = await getMaterials();
+    } else {
+      response = await getItems();
+    }
+
     items.value = response.data;
   } catch (error) {
     console.error(error);
@@ -48,6 +58,20 @@ const loadItems = async () => {
 };
 
 onMounted(loadItems);
+
+watch(
+  () => route.path,
+  () => {
+    loadItems();
+  }
+);
+
+const pageTitle = computed(() => {
+  if (route.path === "/items/tool") return "Daftar Tool";
+  if (route.path === "/items/material") return "Daftar Material";
+  return "Daftar Barang";
+});
+
 
 const deleteItemHandler = async (id) => {
   const confirmed = confirm(
@@ -65,6 +89,12 @@ const deleteItemHandler = async (id) => {
     console.error(error);
   }
 };
+
+const getItemActions = (item) => [
+  { label: "Assign", icon: "ti-link", handler: () => assignItem(item.id) },
+  { label: "Edit", icon: "ti-edit", handler: () => editItem(item.id) },
+  { label: "Hapus", icon: "ti-trash", handler: () => deleteItemHandler(item.id), variant: "danger" },
+];
 </script>
 
 <template>
@@ -76,7 +106,7 @@ const deleteItemHandler = async (id) => {
       </div>
 
       <h1 class="section-title">
-        Daftar Barang
+        {{ pageTitle }}
       </h1>
     </div>
     
@@ -100,7 +130,7 @@ const deleteItemHandler = async (id) => {
             Nama <i :class="['ti', getSortIcon('name')]" aria-hidden="true" />
           </div>
           <div class="dash-cell sortable" @click="toggleSort('category')">
-            Kategory <i :class="['ti', getSortIcon('category')]" aria-hidden="true" />
+            Kategori <i :class="['ti', getSortIcon('category')]" aria-hidden="true" />
           </div>
           <div class="dash-cell sortable" @click="toggleSort('count')">
             Jumlah <i :class="['ti', getSortIcon('count')]" aria-hidden="true" />
@@ -150,29 +180,9 @@ const deleteItemHandler = async (id) => {
           <div class="dash-cell">
             {{ item.unit }}
           </div>
-
-          <div class="dash-cell action-buttons">
-            <button
-              class="btn-acid btn-small"
-              @click="assignItem(item.id)"
-            >
-              Assign
-            </button>
-            
-            <button
-              class="btn-ghost btn-small"
-              @click="editItem(item.id)"
-            >
-              Edit
-            </button>
-            
-            <button
-              class="btn-danger btn-small"
-              @click="deleteItemHandler(item.id)"
-            >
-              Hapus
-            </button>
-          </div>
+            <div class="dash-cell action-buttons">
+              <ActionDropdown :actions="getItemActions(item)" />
+            </div>
         </div>
 
         <div

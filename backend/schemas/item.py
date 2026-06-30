@@ -4,11 +4,12 @@ from typing import Optional
 from models.enums import ItemType
 
 class ItemBase(BaseModel):
-    name        : str
-    category    : Optional[str]
-    type        : ItemType
-    count       : int = Field(default=0, gt=0)
-    unit        : str
+    name            : str
+    category        : Optional[str]
+    type            : ItemType
+    count           : int = Field(default=0, gt=0)
+    unit            : str
+    inventory_date  : Optional[datetime] = None
     
 
 class ItemCreate(ItemBase):
@@ -18,7 +19,6 @@ class ItemCreate(ItemBase):
 class ItemUpdate(BaseModel):
     name        : Optional[str] = None
     category    : Optional[str] = None
-    type        : Optional[ItemType] = None
     count       : Optional[int] = Field(default=0, ge=0)
     unit        : Optional[str] = None
     

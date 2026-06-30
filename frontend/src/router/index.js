@@ -33,6 +33,16 @@ const router = createRouter({
           component: () => import('../views/Item/ItemsView.vue')
         },
         {
+          path: 'items/material',
+          name: 'material',
+          component: () => import('../views/Item/ItemsView.vue')
+        },
+        {
+          path: 'items/tool',
+          name: 'tool',
+          component: () => import('../views/Item/ItemsView.vue')
+        },
+        {
           path: 'items/create',
           name: 'item-create',
           component: () => import('../views/Item/ItemCreateView.vue')

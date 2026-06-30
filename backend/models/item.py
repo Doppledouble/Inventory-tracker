@@ -1,6 +1,5 @@
-from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Enum
+from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Enum, Boolean
 from models.enums import ItemType
-from pydantic import Field
 from sqlalchemy.sql import func
 from sqlalchemy.orm import relationship
 
@@ -18,7 +17,7 @@ class Item(Base):
     count           = Column(Integer, nullable=False)
     unit            = Column(String, nullable=True)
     
-    # is_deleted = Field(default=False, description="Flag for soft delete")
+    is_active      = Column(Boolean, default=True, nullable=False)
     
     
     created_at      = Column(DateTime(timezone=True), server_default=func.now())

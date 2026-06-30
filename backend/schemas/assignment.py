@@ -6,9 +6,9 @@ from typing import Optional
 class AssignmentBase(BaseModel):
     item_id: int
     employee_id: int
-    location: str
+    location: Optional[str] = None
     quantity: int
-    notes: str | None = None
+    notes: Optional[str] = None
 
 
 class AssignmentCreate(AssignmentBase):
@@ -16,8 +16,9 @@ class AssignmentCreate(AssignmentBase):
 
 
 class AssignmentUpdate(BaseModel):
-    # returned_at: Optional[datetime] = None
     notes: Optional[str] = None
+    quantity: Optional[int] = None
+    location: Optional[str] = None
     
     
 class ItemBasic(BaseModel):
@@ -39,13 +40,14 @@ class EmployeeBasic(BaseModel):
 
 class AssignmentResponse(BaseModel):
     id: int
-    quantity: int    
-    assigned_at:datetime
-    returned_at:datetime | None
+    quantity: int
+    assigned_at: datetime
+    returned_at: Optional[datetime] = None
 
-    item: ItemBasic       # { id, name }
-    employee: EmployeeBasic  # { id, first_name, last_name }
-    location: str  
+    item: ItemBasic
+    employee: EmployeeBasic
+    location: Optional[str] = None
+    notes: Optional[str] = None  
 
     class Config:
         from_attributes = True

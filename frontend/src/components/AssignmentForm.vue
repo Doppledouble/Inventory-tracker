@@ -121,6 +121,7 @@ const submitForm = () => {
           placeholder="Pilih item"
           :disabled="isItemLocked"      
           @update:model-value="onItemSelect"
+          required
         />
         <small v-if="isItemLocked" style="color: var(--text-muted)">
           
@@ -136,6 +137,7 @@ const submitForm = () => {
           track-by="id"
           placeholder="Pilih karyawan"
           @update:model-value="onEmployeeSelect"
+          required
         />
       </div>
 

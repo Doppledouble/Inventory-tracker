@@ -1,51 +1,100 @@
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session, joinedload
+from datetime import datetime, timezone
 
+from models.assignment import Assignment
 from database import get_db
 from models.item import Item
-from schemas.item import ItemCreate, ItemUpdate
+from schemas.item import ItemCreate, ItemUpdate, ItemResponse
 from models.transaction import Transaction
-from models.enums import TransactionType
+from models.enums import TransactionType, ItemType
 
 
 router = APIRouter(prefix="/items", tags=["Items"])
 
 
-@router.post("/")
+@router.post("/", response_model=ItemResponse)
 def create_item(item: ItemCreate, db: Session = Depends(get_db)):
+    
+    # Check if an inactive item with the same name already exists
+    existing_item = db.query(Item).filter(
+        Item.name == item.name,
+        Item.is_active == False
+    ).first()
+
+    if existing_item:
+        existing_item.is_active = True
+        existing_item.category = item.category
+        existing_item.type = item.type
+        existing_item.count = item.count
+        existing_item.unit = item.unit
+
+        db.flush()
+
+        transaction = Transaction(
+            item_id=existing_item.id,
+            quantity=item.count,
+            transaction_type=TransactionType.ADD,
+            created_at=item.inventory_date or datetime.now(timezone.utc)
+        )
+
+        db.add(transaction)
+        db.commit()
+        db.refresh(existing_item)
+
+        return existing_item
+
     new_item = Item(
         name=item.name,
         category=item.category,
         type=item.type,
         count=item.count,
-        unit=item.unit
+        unit=item.unit,
+        is_active=True
     )
-    # Insert the new_item first to create the id in the database
+
     db.add(new_item)
     db.flush()
 
     transaction = Transaction(
         item_id=new_item.id,
         quantity=item.count,
-        transaction_type=TransactionType.ADD
+        transaction_type=TransactionType.ADD,
+        created_at=item.inventory_date or datetime.now(timezone.utc)
     )
-        
+
     db.add(transaction)
-    
     db.commit()
     db.refresh(new_item)
 
     return new_item
 
 
-@router.get("/")
+@router.get("/", response_model=list[ItemResponse])
 def get_items(db: Session = Depends(get_db)):
-    return db.query(Item).all()
+    return db.query(Item).filter(Item.is_active == True).all()
 
 
-@router.get("/{item_id}")
+@router.get("/tool", response_model=list[ItemResponse])
+def get_tool(db: Session = Depends(get_db)):
+    return db.query(Item).filter(
+        Item.is_active == True,
+        Item.type == ItemType.TOOL).all()
+    
+    
+@router.get("/material", response_model=list[ItemResponse])
+def get_material(db: Session = Depends(get_db)):
+    return db.query(Item).filter(
+        Item.is_active == True,
+        Item.type == ItemType.MATERIAL).all()    
+
+
+@router.get("/{item_id}", response_model=ItemResponse)
 def get_item(item_id: int, db: Session = Depends(get_db)):
-    item = db.query(Item).filter(Item.id == item_id).first()
+    item = db.query(Item).filter(
+        Item.id == item_id,
+        Item.is_active == True
+        ).first()
 
     if not item:
         raise HTTPException(status_code=404, detail="Item not found")
@@ -53,7 +102,7 @@ def get_item(item_id: int, db: Session = Depends(get_db)):
     return item
 
 
-@router.patch("/{item_id}")
+@router.patch("/{item_id}", response_model=ItemResponse)
 def update_item(
     item_id: int,
     item_data: ItemUpdate,
@@ -89,19 +138,37 @@ def update_item(
 
 @router.delete("/{item_id}")
 def delete_item(item_id: int, db: Session = Depends(get_db)):
-    item = db.query(Item).filter(Item.id == item_id).first()
+    item = db.query(Item).filter(
+        Item.id == item_id,
+        Item.is_active == True
+    ).first()
 
     if not item:
         raise HTTPException(status_code=404, detail="Item not found")
+
+    # check if item has any active assignments
+    active_assignment = db.query(Assignment).filter(
+        Assignment.item_id == item_id,
+        Assignment.returned_at.is_(None) 
+    ).first()
+
+    if active_assignment:
+        raise HTTPException(
+            status_code=400,
+            detail="Item cannot be deleted while it is currently assigned to an employee"
+        )
+
+    item.count = 0
+    item.is_active = False
     
     transaction = Transaction(
         item_id = item.id,
         quantity =- item.count,
-        transaction_type = TransactionType.REMOVE 
+        transaction_type = TransactionType.REMOVE,
+        notes="Item dihapus dari inventori" 
     )
-    
+   
     db.add(transaction)
-    db.delete(item)
     db.commit()
 
-    return {"message": f"Item with id {item_id} successfuly deleted"}
+    return {"message": f"Item {item.name} successfully deleted"}

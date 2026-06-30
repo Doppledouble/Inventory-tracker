@@ -3,6 +3,7 @@ import { ref, onMounted } from "vue";
 import { getEmployees,deleteEmployee } from "../../services/employeeService.js";
 import { useTableControls } from "../../composables/useTableControls.js";
 import { useRouter } from "vue-router";
+import ActionDropdown from "../../components/ActionDropdown.vue";
 
 const router = useRouter();
 const employees = ref([]);
@@ -56,6 +57,11 @@ const deleteEmployeeHandler = async (id) => {
     console.error(error);
   }
 };
+
+const getEmployeeActions = (employee) => [
+  { label: "Edit", icon: "ti-edit", handler: () => editEmployee(employee.id) },
+  { label: "Hapus", icon: "ti-trash", handler: () => deleteEmployeeHandler(employee.id), variant: "danger" },
+];
 </script>
 
 <template>
@@ -134,19 +140,7 @@ const deleteEmployeeHandler = async (id) => {
           </div>
 
           <div class="dash-cell action-buttons">
-            <button
-              class="btn-ghost btn-small"
-              @click="editEmployee(employee.id)"
-            >
-              Edit
-            </button>
-
-            <button
-              class="btn-danger"
-              @click="deleteEmployeeHandler(employee.id)"
-            >
-              Hapus
-            </button>
+              <ActionDropdown :actions="getEmployeeActions(employee)" />
           </div>
         </div>
 

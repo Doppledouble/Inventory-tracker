@@ -4,6 +4,14 @@ export const getItems = () => {
   return api.get("/items");
 };
 
+export const getTools = () => {
+  return api.get("/items/tool");
+};
+
+export const getMaterials = () => {
+  return api.get("/items/material");
+};
+
 export const getItemById = (id) => {
   return api.get(`/items/${id}`);
 }

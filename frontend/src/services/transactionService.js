@@ -7,3 +7,7 @@ export const getTransactions = () => {
 export const getItemHistory = (id) => {
   return api.get(`/transactions/items/${id}/history`);
 }
+
+export const withdrawMaterial = (id, itemData) => {
+  return api.get(`/transactions/items/${id}/withdraw`, itemData);
+}

@@ -4,18 +4,6 @@ from datetime import datetime
 from models.enums import TransactionType
 
 
-# ─── Request ───────────────────────────────────────────────
-class StockTransactionRequest(BaseModel):
-    quantity: int
-    notes: Optional[str] = None
-    employee_id: Optional[int] = None  
-
-
-class StockAdjustmentRequest(BaseModel):
-    new_quantity: int  
-    notes: Optional[str] = None
-    employee_id: Optional[int] = None
-
 # ─── Nested schemas for response ───────────────────────────
 class ItemBasic(BaseModel):
     id: int
@@ -37,27 +25,21 @@ class EmployeeBasic(BaseModel):
 # ─── Response ──────────────────────────────────────────────
 class StockTransactionResponse(BaseModel):
     id: int
-    item_id: int
-    item: ItemBasic                         
+    item: ItemBasic
+    employee: Optional[EmployeeBasic] = None
+    location: Optional[str] = None
+    transaction_type: TransactionType
+    quantity: int
+    notes: Optional[str] = None
+    created_at: datetime
+
+    class Config:
+        from_attributes = True
+        
+        
+        
+class StockWithdrawRequest(BaseModel):
+    quantity: int
     employee_id: Optional[int] = None
-    employee: Optional[EmployeeBasic] = None  
-    transaction_type: TransactionType
-    quantity: int
+    location: Optional[str] = None
     notes: Optional[str] = None
-    created_at: datetime
-
-    class Config:
-        from_attributes = True
-
-
-# ─── History (for listing transactions) ────────────────────
-class StockTransactionHistory(BaseModel):
-    id: int
-    transaction_type: TransactionType
-    quantity: int
-    notes: Optional[str] = None
-    employee: Optional[EmployeeBasic] = None 
-    created_at: datetime
-
-    class Config:
-        from_attributes = True
